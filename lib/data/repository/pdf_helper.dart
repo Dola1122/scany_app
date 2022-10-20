@@ -7,6 +7,7 @@ import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 import 'dart:typed_data';
 import 'package:flutter/services.dart';
+import 'package:scany/data/repository/images_helper.dart';
 
 class PdfHelper {
 
@@ -27,10 +28,13 @@ class PdfHelper {
   static Future<File> addImageToPdf() async {
 
     final pw.Document pdf = pw.Document();
-    final imageJpg =
-        (await rootBundle.load("assets/img1.jpg")).buffer.asUint8List();
+     Uint8List? imageJpg = await ImagesHelper.getImageFromCamera();
+     while(imageJpg == null) {
+       imageJpg = await ImagesHelper.getImageFromCamera();
+     }
 
-    var decodedImage = await decodeImageFromList(imageJpg);
+
+    var decodedImage = await decodeImageFromList(imageJpg!);
 
 
     // File image = new File('image.png'); // Or any other way to get a File instance.
@@ -46,7 +50,7 @@ class PdfHelper {
         ),
         build: (context) => pw.FullPage(
           ignoreMargins: true,
-          child: pw.Image(pw.MemoryImage(imageJpg), fit: pw.BoxFit.cover),
+          child: pw.Image(pw.MemoryImage(imageJpg!), fit: pw.BoxFit.cover),
         ),
       ),
     );

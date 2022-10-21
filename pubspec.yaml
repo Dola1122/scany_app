@@ -39,6 +39,7 @@ dependencies:
   syncfusion_flutter_pdfviewer: ^20.3.50
   open_file: ^3.2.1
   image_picker: ^0.8.6
+  flutter_expandable_fab: ^1.5.2
 
 
   # The following adds the Cupertino Icons font to your application.

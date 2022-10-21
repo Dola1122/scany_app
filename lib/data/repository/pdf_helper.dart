@@ -10,7 +10,6 @@ import 'package:flutter/services.dart';
 import 'package:scany/data/repository/images_helper.dart';
 
 class PdfHelper {
-
   // static Future<File> generateCenteredText(String text) async {
   //   final pw.Document pdf = pw.Document();
   //
@@ -25,17 +24,10 @@ class PdfHelper {
   //   return saveDocument(name: "my_example.pdf", pdf: pdf);
   // }
 
-  static Future<File> addImageToPdf() async {
 
-    final pw.Document pdf = pw.Document();
-     Uint8List? imageJpg = await ImagesHelper.getImageFromCamera();
-     while(imageJpg == null) {
-       imageJpg = await ImagesHelper.getImageFromCamera();
-     }
-
+  static Future<void> addImageToPdf({required pw.Document pdf ,required Uint8List? imageJpg}) async {
 
     var decodedImage = await decodeImageFromList(imageJpg!);
-
 
     // File image = new File('image.png'); // Or any other way to get a File instance.
     // var decodedImage = await decodeImageFromList(image.readAsBytesSync());
@@ -45,7 +37,7 @@ class PdfHelper {
     pdf.addPage(
       pw.Page(
         pageFormat: PdfPageFormat(
-          29.7 * (decodedImage.width/decodedImage.height) * PdfPageFormat.cm,
+          29.7 * (decodedImage.width / decodedImage.height) * PdfPageFormat.cm,
           29.7 * PdfPageFormat.cm,
         ),
         build: (context) => pw.FullPage(
@@ -54,8 +46,6 @@ class PdfHelper {
         ),
       ),
     );
-
-    return saveDocument(name: "my_example.pdf", pdf: pdf);
   }
 
   static Future<File> saveDocument(
@@ -64,7 +54,6 @@ class PdfHelper {
     final dir = await getApplicationDocumentsDirectory();
     final file = File("${dir.path}/$name");
     await file.writeAsBytes(bytes);
-    print(dir);
 
     return file;
   }

@@ -1,11 +1,10 @@
-import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:reorderable_grid_view/reorderable_grid_view.dart';
 import 'package:scany/data/repository/pdf_helper.dart';
-import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 import 'package:flutter_expandable_fab/flutter_expandable_fab.dart';
 import 'package:pdf/widgets.dart' as pw;
-
+import '../../constants/strings.dart';
 import '../../data/repository/images_helper.dart';
 import '../widgets/image_page.dart';
 
@@ -39,7 +38,9 @@ class _NewPdfScreenState extends State<NewPdfScreen> {
                 Uint8List? imageJpg = await ImagesHelper.getImageFromGallery();
 
                 if (imageJpg != null) {
-                  await PdfHelper.addImageToPdf(pdf: pdf, imageJpg: imageJpg);
+                  setState(() {
+                    images.add(imageJpg);
+                  });
                 }
 
                 final state = _key.currentState;
@@ -56,9 +57,9 @@ class _NewPdfScreenState extends State<NewPdfScreen> {
                 Uint8List? imageJpg = await ImagesHelper.getImageFromCamera();
 
                 if (imageJpg != null) {
-                  //await PdfHelper.addImageToPdf(pdf: pdf, imageJpg: imageJpg);
-                  images.add(imageJpg);
-                  setState(() {});
+                  setState(() {
+                    images.add(imageJpg);
+                  });
                 }
 
                 // open and close FAB
@@ -74,20 +75,32 @@ class _NewPdfScreenState extends State<NewPdfScreen> {
         appBar: AppBar(
           title: TextField(
             controller: fileNameController,
-            style: TextStyle(color: Colors.white),
-            decoration: InputDecoration(
+            style: const TextStyle(color: Colors.white),
+            decoration: const InputDecoration(
+              hintText: "file name",
+              hintStyle: TextStyle(color: Colors.white),
               border: InputBorder.none,
             ),
           ),
           actions: [
             IconButton(
-              icon: Icon(Icons.save),
+              icon: const Icon(Icons.save),
               onPressed: () async {
+
+                // add every image in the list as a page to the pdf
+                for (int i = 0; i < images.length; i++) {
+                  await PdfHelper.addImageToPdf(pdf: pdf, imageJpg: images[i]);
+                }
+
+                // save the pdf file
                 final pdfFile = await PdfHelper.saveDocument(
                     name:
                         "${fileNameController.text != "" ? fileNameController.text : "example"}.pdf",
                     pdf: pdf);
+
+                // open the pdf file
                 await PdfHelper.openFile(pdfFile);
+
                 Future.delayed(
                   Duration(seconds: 2),
                   () {
@@ -98,13 +111,13 @@ class _NewPdfScreenState extends State<NewPdfScreen> {
             ),
           ],
         ),
-        body: images == null
+        body: images.isEmpty
             ? Center(
                 child: Text("no pages added"),
               )
             : Container(
                 width: double.infinity,
-                child: GridView.builder(
+                child: ReorderableGridView.builder(
                     padding: EdgeInsets.all(24),
                     itemCount: images.length,
                     gridDelegate:
@@ -114,11 +127,25 @@ class _NewPdfScreenState extends State<NewPdfScreen> {
                       crossAxisSpacing: 50,
                       mainAxisSpacing: 12,
                     ),
+                    onReorder: (oldIndex, newIndex) {
+                      setState(() {
+                        final element = images.removeAt(oldIndex);
+                        images.insert(newIndex, element);
+                      });
+                    },
+
                     itemBuilder: (context, index) {
-                      return ImagePage(
-                        image: images[index],
-                        index: index,
-                      );
+                      return
+                        InkWell(
+                          key:  Key("$index"),
+                          onTap: (){
+                            Navigator.of(context).pushNamed(editPhotoScreen,arguments: images[index]);
+                          },
+                          child: ImagePage(
+                          image: images[index],
+                          index: index,
+                      ),
+                        );
                     }),
               ));
   }

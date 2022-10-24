@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'app_router.dart';
 
-void main() {
+void main()async  {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(MyApp(appRouter: AppRouter(),));
+
 }
 
 class MyApp extends StatelessWidget {
@@ -16,6 +19,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       onGenerateRoute: appRouter.generateRoute,
+      theme: ThemeData(primarySwatch: Colors.deepPurple),
     );
   }
 }
+

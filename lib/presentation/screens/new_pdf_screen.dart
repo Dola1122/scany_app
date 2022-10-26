@@ -86,7 +86,6 @@ class _NewPdfScreenState extends State<NewPdfScreen> {
             IconButton(
               icon: const Icon(Icons.save),
               onPressed: () async {
-
                 // add every image in the list as a page to the pdf
                 for (int i = 0; i < images.length; i++) {
                   await PdfHelper.addImageToPdf(pdf: pdf, imageJpg: images[i]);
@@ -133,19 +132,18 @@ class _NewPdfScreenState extends State<NewPdfScreen> {
                         images.insert(newIndex, element);
                       });
                     },
-
                     itemBuilder: (context, index) {
-                      return
-                        InkWell(
-                          key:  Key("$index"),
-                          onTap: (){
-                            Navigator.of(context).pushNamed(editPhotoScreen,arguments: images[index]);
-                          },
-                          child: ImagePage(
+                      return InkWell(
+                        key: Key("$index"),
+                        onTap: () {
+                          Navigator.of(context).pushNamed(editPhotoScreen,
+                              arguments: images[index]);
+                        },
+                        child: ImagePage(
                           image: images[index],
                           index: index,
-                      ),
-                        );
+                        ),
+                      );
                     }),
               ));
   }

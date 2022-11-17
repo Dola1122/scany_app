@@ -1,9 +1,11 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:reorderable_grid_view/reorderable_grid_view.dart';
+import 'package:scany/data/repository/edge_detection_helper.dart';
 import 'package:scany/data/repository/pdf_helper.dart';
 import 'package:flutter_expandable_fab/flutter_expandable_fab.dart';
 import 'package:pdf/widgets.dart' as pw;
+import 'package:scany/presentation/screens/camera_and_detection/scan.dart';
 import '../../constants/strings.dart';
 import '../../data/repository/images_helper.dart';
 import '../widgets/image_page.dart';
@@ -17,6 +19,7 @@ class NewPdfScreen extends StatefulWidget {
 
 class _NewPdfScreenState extends State<NewPdfScreen> {
   List<Uint8List> images = [];
+
 
   final _key = GlobalKey<ExpandableFabState>();
   pw.Document pdf = pw.Document();
@@ -54,7 +57,10 @@ class _NewPdfScreenState extends State<NewPdfScreen> {
               heroTag: "camera",
               child: const Icon(Icons.camera_alt_outlined),
               onPressed: () async {
-                Uint8List? imageJpg = await ImagesHelper.getImageFromCamera();
+                ////Uint8List? imageJpg = await EdgeDetectionHelper().getImage();
+                // ImagesHelper.getImageFromCamera();
+
+                Uint8List? imageJpg = await Navigator.of(context).push(MaterialPageRoute(builder: (context)=>Scan()));
 
                 if (imageJpg != null) {
                   setState(() {

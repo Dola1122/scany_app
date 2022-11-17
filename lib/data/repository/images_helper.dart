@@ -2,6 +2,7 @@ import 'dart:typed_data';
 import 'package:image_picker/image_picker.dart';
 
 class ImagesHelper {
+
   static Future<Uint8List?> getImageFromCamera() async {
     Uint8List? file = await _pickImage(ImageSource.camera);
     return file;

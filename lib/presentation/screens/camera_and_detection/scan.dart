@@ -21,7 +21,6 @@ class Scan extends StatefulWidget {
 }
 
 class _ScanState extends State<Scan> {
-
   CameraController? controller;
   String? croppedImagePath;
   late List<CameraDescription> cameras;
@@ -46,7 +45,7 @@ class _ScanState extends State<Scan> {
               if (croppedImagePath == null) {
                 await _processImage(imagePath!, edgeDetectionResult!);
                 Uint8List img = await File(croppedImagePath!).readAsBytes();
-                Navigator.pop(context,img);
+                Navigator.pop(context, img);
               }
             },
             icon: Icon(Icons.check),
@@ -68,8 +67,10 @@ class _ScanState extends State<Scan> {
     }
 
     if (imagePath == null && edgeDetectionResult == null) {
-      if(controller == null){
-        return Center(child: CircularProgressIndicator(),);
+      if (controller == null) {
+        return Center(
+          child: CircularProgressIndicator(),
+        );
       }
       return CameraView(controller: controller!);
     }
@@ -182,12 +183,6 @@ class _ScanState extends State<Scan> {
         foregroundColor: Colors.white,
         onPressed: onTakePictureButtonPressed,
         child: const Icon(Icons.camera_alt),
-      ),
-      const SizedBox(width: 16),
-      FloatingActionButton(
-        foregroundColor: Colors.white,
-        onPressed: _onGalleryButtonPressed,
-        child: const Icon(Icons.image),
       ),
     ]);
   }

@@ -9,6 +9,7 @@ import 'package:scany/presentation/screens/camera_and_detection/scan.dart';
 import '../../constants/strings.dart';
 import '../../data/repository/images_helper.dart';
 import '../widgets/image_page.dart';
+import 'camera_and_detection/camera_preview_screen.dart';
 
 class NewPdfScreen extends StatefulWidget {
   const NewPdfScreen({Key? key}) : super(key: key);
@@ -60,7 +61,7 @@ class _NewPdfScreenState extends State<NewPdfScreen> {
                 ////Uint8List? imageJpg = await EdgeDetectionHelper().getImage();
                 // ImagesHelper.getImageFromCamera();
 
-                Uint8List? imageJpg = await Navigator.of(context).push(MaterialPageRoute(builder: (context)=>Scan()));
+                Uint8List? imageJpg = await Navigator.of(context).push(MaterialPageRoute(builder: (context)=>CameraPreviewScreen()));
 
                 if (imageJpg != null) {
                   setState(() {

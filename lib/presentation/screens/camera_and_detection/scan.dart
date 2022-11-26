@@ -21,14 +21,11 @@ class Scan extends StatefulWidget {
 }
 
 class _ScanState extends State<Scan> {
-  late CameraController controller;
 
+  CameraController? controller;
   String? croppedImagePath;
-
   late List<CameraDescription> cameras;
-
   String? imagePath;
-
   EdgeDetectionResult? edgeDetectionResult;
 
   @override
@@ -71,7 +68,10 @@ class _ScanState extends State<Scan> {
     }
 
     if (imagePath == null && edgeDetectionResult == null) {
-      return CameraView(controller: controller);
+      if(controller == null){
+        return Center(child: CircularProgressIndicator(),);
+      }
+      return CameraView(controller: controller!);
     }
 
     return ImagePreview(
@@ -92,7 +92,7 @@ class _ScanState extends State<Scan> {
 
     controller =
         CameraController(cameras[0], ResolutionPreset.max, enableAudio: false);
-    controller.initialize().then((_) {
+    controller?.initialize().then((_) {
       if (!mounted) {
         return;
       }
@@ -102,14 +102,14 @@ class _ScanState extends State<Scan> {
 
   @override
   void dispose() {
-    controller.dispose();
+    controller?.dispose();
     super.dispose();
   }
 
   String timestamp() => DateTime.now().millisecondsSinceEpoch.toString();
 
   Future<String?> takePicture() async {
-    if (!controller.value.isInitialized) {
+    if (!controller!.value.isInitialized) {
       log('Error: select a camera first.');
       return null;
     }
@@ -119,12 +119,12 @@ class _ScanState extends State<Scan> {
     await Directory(dirPath).create(recursive: true);
     String? filePath;
 
-    if (controller.value.isTakingPicture) {
+    if (controller!.value.isTakingPicture) {
       return null;
     }
 
     try {
-      XFile image = await controller.takePicture();
+      XFile image = await controller!.takePicture();
       filePath = image.path;
     } on CameraException catch (e) {
       log(e.toString());

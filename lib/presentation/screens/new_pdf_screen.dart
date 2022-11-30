@@ -1,6 +1,8 @@
+import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:reorderable_grid_view/reorderable_grid_view.dart';
+import 'package:scany/data/models/detected_image_model.dart';
 import 'package:scany/data/repository/edge_detection_helper.dart';
 import 'package:scany/data/repository/pdf_helper.dart';
 import 'package:flutter_expandable_fab/flutter_expandable_fab.dart';
@@ -20,7 +22,6 @@ class NewPdfScreen extends StatefulWidget {
 
 class _NewPdfScreenState extends State<NewPdfScreen> {
   List<Uint8List> images = [];
-
 
   final _key = GlobalKey<ExpandableFabState>();
   pw.Document pdf = pw.Document();
@@ -61,13 +62,23 @@ class _NewPdfScreenState extends State<NewPdfScreen> {
                 ////Uint8List? imageJpg = await EdgeDetectionHelper().getImage();
                 // ImagesHelper.getImageFromCamera();
 
-                Uint8List? imageJpg = await Navigator.of(context).push(MaterialPageRoute(builder: (context)=>CameraPreviewScreen()));
+                List<DetectedImageModel> detectedImages = [];
+                List<DetectedImageModel>? newImages =
+                    await Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => CameraPreviewScreen(),
+                  ),
+                );
 
-                if (imageJpg != null) {
-                  setState(() {
-                    images.add(imageJpg);
-                  });
+                if (newImages != null) {
+                  detectedImages.addAll(newImages);
+                  for (int i = 0; i < newImages.length; i++) {
+                    Uint8List img = await File(newImages[i].croppedImagePath!)
+                        .readAsBytes();
+                    images.add(img);
+                  }
                 }
+                setState(() {});
 
                 // open and close FAB
                 final state = _key.currentState;

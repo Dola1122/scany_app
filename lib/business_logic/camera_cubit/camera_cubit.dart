@@ -7,6 +7,7 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:scany/data/models/detected_image_model.dart';
 import 'package:scany/presentation/screens/camera_and_detection/edge_detector.dart';
 import 'package:simple_edge_detection/edge_detection.dart';
 
@@ -16,10 +17,9 @@ class CameraCubit extends Cubit<CameraState> {
   CameraCubit() : super(CameraInitial());
 
   CameraController? controller;
-  String? croppedImagePath;
   late List<CameraDescription> cameras;
-  String? imagePath;
-  EdgeDetectionResult? edgeDetectionResult;
+  DetectedImageModel currentImage = DetectedImageModel();
+  List<DetectedImageModel> images = [];
 
   // initialize camera controller when go to camera preview
   Future<void> initializeController() async {
@@ -36,48 +36,94 @@ class CameraCubit extends Cubit<CameraState> {
     emit(ControllerInitializedState());
   }
 
+  // add current image and push to camera to take another image
+  Future<void> addCurrentImage() async {
+    await processImage();
+    images.add(currentImage);
+    currentImage = DetectedImageModel();
+    emit(AddCurrentImageSuccessState());
+  }
 
-  //crop image
+  // detect edges for the image
+  Future<void> detectEdges() async {
+    if (currentImage.imagePath == null) {
+      return;
+    }
+    currentImage.edgeDetectionResult =
+        await EdgeDetector().detectEdges(currentImage.imagePath!);
+  }
+
+  // crop image
   Future<void> processImage() async {
-    if (imagePath == null) {
-      return ;
+    if (currentImage.imagePath == null) {
+      return;
     }
     final Directory extDir = await getTemporaryDirectory();
-    final String dirPath = '${extDir.path}/flutter_test2.jpg';
+    final String dirPath = '${extDir.path}/${DateTime.now()}.jpg';
     // await Directory(dirPath).create(recursive: true);
-    log("process image function filepath1 ${imagePath}");
+    log("process image function filepath1 ${currentImage.imagePath}");
     log("process image function dirpath2 ${dirPath}");
-    await File(imagePath!).copy(dirPath);
-    bool result =
-    await EdgeDetector().processImage(dirPath, edgeDetectionResult!);
+    await File(currentImage.imagePath!).copy(dirPath);
+    bool result = await EdgeDetector()
+        .processImage(dirPath, currentImage.edgeDetectionResult!);
 
     if (result == false) {
-      return ;
+      return;
     }
-      imageCache.clearLiveImages();
-      imageCache.clear();
-      croppedImagePath = dirPath!;
+    imageCache.clearLiveImages();
+    imageCache.clear();
+    currentImage.croppedImagePath = dirPath!;
   }
 
-  void popBack(context)async{
-
-    Uint8List img = await File(croppedImagePath!).readAsBytes();
+  // regular pop to new pdf screen
+  void popBack(context) async {
     Navigator.pop(context);
-    Navigator.pop(context);
-    Navigator.pop(context, img);
-    edgeDetectionResult = null;
-    imagePath = null;
-    croppedImagePath = null;
-    // controller?.dispose();
-
+    currentImage = DetectedImageModel();
+    images = [];
+    controller?.dispose();
+    controller = null;
   }
 
+  // new pop for multiple images
+  void newPopBack(context) async {
+    Navigator.pop(context, images);
+    currentImage = DetectedImageModel();
+    images = [];
+    controller?.dispose();
+    controller = null;
+  }
+
+  // take image by camera controller
+  Future<void> takePicture() async {
+    currentImage = DetectedImageModel();
+    if (!controller!.value.isInitialized) {
+      log('Error: select a camera first.');
+      return;
+    }
+
+    final Directory extDir = await getTemporaryDirectory();
+    final String dirPath = '${extDir.path}/Pictures/flutter_test';
+    await Directory(dirPath).create(recursive: true);
+    String? filePath;
+
+    if (controller!.value.isTakingPicture) {
+      return;
+    }
+
+    try {
+      XFile image = await controller!.takePicture();
+      filePath = image.path;
+    } on CameraException catch (e) {
+      log(e.toString());
+      return;
+    }
+    currentImage.imagePath = filePath;
+  }
+
+  // cubit
   @override
   void onChange(Change<CameraState> change) {
     super.onChange(change);
     print(change);
   }
-
-
-
 }

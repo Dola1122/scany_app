@@ -7,24 +7,17 @@ import 'package:flutter/material.dart';
 
 import 'edge_detection_shape/edge_detection_shape.dart';
 
-class ImagePreview extends StatefulWidget {
-  ImagePreview({
-    required this.imagePath,
-    required this.edgeDetectionResult
-  });
+class ImagePreview extends StatelessWidget {
+  ImagePreview({super.key, this.imagePath, this.edgeDetectionResult});
 
   final String? imagePath;
   final EdgeDetectionResult? edgeDetectionResult;
 
-  @override
-  _ImagePreviewState createState() => _ImagePreviewState();
-}
-
-class _ImagePreviewState extends State<ImagePreview> {
   GlobalKey imageWidgetKey = GlobalKey();
 
+
   @override
-  Widget build(BuildContext mainContext) {
+  Widget build(BuildContext context) {
     return Center(
       child: Stack(
         fit: StackFit.expand,
@@ -33,12 +26,12 @@ class _ImagePreviewState extends State<ImagePreview> {
               child: Text('Loading ...')
           ),
           Image.file(
-              File(widget.imagePath!),
+              File(imagePath!),
               fit: BoxFit.contain,
               key: imageWidgetKey
           ),
           FutureBuilder<ui.Image>(
-              future: loadUiImage(widget.imagePath!),
+              future: loadUiImage(imagePath!),
               builder: (BuildContext context, AsyncSnapshot<ui.Image> snapshot) {
                 return _getEdgePaint(snapshot, context);
               }
@@ -55,7 +48,7 @@ class _ImagePreviewState extends State<ImagePreview> {
     if (imageSnapshot.hasError)
       return Text('Error: ${imageSnapshot.error}');
 
-    if (widget.edgeDetectionResult == null)
+    if (edgeDetectionResult == null)
       return Container();
 
     final keyContext = imageWidgetKey.currentContext;
@@ -72,7 +65,7 @@ class _ImagePreviewState extends State<ImagePreview> {
           imageSnapshot.data!.height.toDouble()
       ),
       renderedImageSize: Size(box.size.width, box.size.height),
-      edgeDetectionResult: widget.edgeDetectionResult!,
+      edgeDetectionResult: edgeDetectionResult!,
     );
   }
 

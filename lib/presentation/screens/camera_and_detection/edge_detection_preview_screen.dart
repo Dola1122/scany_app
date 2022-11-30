@@ -5,49 +5,88 @@ import 'package:scany/constants/strings.dart';
 
 import 'cropping preview.dart';
 
-class EdgeDetectionPreviewScreen extends StatefulWidget {
+class EdgeDetectionPreviewScreen extends StatelessWidget {
   const EdgeDetectionPreviewScreen({Key? key}) : super(key: key);
 
   @override
-  State<EdgeDetectionPreviewScreen> createState() =>
-      _EdgeDetectionPreviewScreenState();
-}
-
-class _EdgeDetectionPreviewScreenState
-    extends State<EdgeDetectionPreviewScreen> {
-  @override
   Widget build(BuildContext context) {
     return BlocConsumer<CameraCubit, CameraState>(
-      listener: (context, state) {
-        // TODO: implement listener
-      },
+      listener: (context, state) {},
       builder: (context, state) {
         return Scaffold(
-          appBar: AppBar(
-            actions: [
-              IconButton(
-                onPressed: () async {
-                  // if (croppedImagePath == null) {
-                  //   await _processImage(imagePath!, edgeDetectionResult!);
-                  //   Uint8List img = await File(croppedImagePath!).readAsBytes();
-                  //   Navigator.pop(context, img);
-                  // }
-                  await BlocProvider.of<CameraCubit>(context).processImage();
-                  Navigator.of(context).pushNamed(editPhotoScreen);
-
-                },
-                icon: Icon(Icons.check),
+          bottomNavigationBar: BottomAppBar(
+            color: Colors.black,
+            child: Container(
+              height: 60,
+              child: Row(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: <Widget>[
+                  IconButton(
+                    icon: Icon(
+                      Icons.rotate_left_rounded,
+                      size: 30,
+                      color: Colors.white,
+                    ),
+                    onPressed: () {},
+                  ),
+                  IconButton(
+                    icon: Icon(
+                      Icons.rotate_right_rounded,
+                      size: 30,
+                      color: Colors.white,
+                    ),
+                    onPressed: () {},
+                  ),
+                  IconButton(
+                    icon: Icon(
+                      Icons.expand_rounded,
+                      size: 30,
+                      color: Colors.white,
+                    ),
+                    onPressed: () {},
+                  ),
+                  IconButton(
+                    icon: Icon(
+                      Icons.arrow_forward_ios_rounded,
+                      size: 30,
+                      color: Colors.white,
+                    ),
+                    onPressed: () async {
+                      Navigator.of(context).pop();
+                      await BlocProvider.of<CameraCubit>(context)
+                          .addCurrentImage();
+                    },
+                  )
+                ],
               ),
-            ],
+            ),
           ),
-          body: Stack(
-            children: <Widget>[
-              ImagePreview(
-                imagePath: BlocProvider.of<CameraCubit>(context).imagePath,
-                edgeDetectionResult:
-                    BlocProvider.of<CameraCubit>(context).edgeDetectionResult,
+          appBar: AppBar(
+            backgroundColor: Colors.black,
+            // actions: [
+            //   IconButton(
+            //     onPressed: () async {
+            //       await BlocProvider.of<CameraCubit>(context).processImage();
+            //       Navigator.of(context).pushNamed(editPhotoScreen);
+            //     },
+            //     icon: Icon(Icons.check),
+            //   ),
+            // ],
+          ),
+          body: Container(
+            color: Colors.black87,
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: ImagePreview(
+                imagePath: BlocProvider.of<CameraCubit>(context)
+                    .currentImage
+                    .imagePath,
+                edgeDetectionResult: BlocProvider.of<CameraCubit>(context)
+                    .currentImage
+                    .edgeDetectionResult,
               ),
-            ],
+            ),
           ),
         );
       },

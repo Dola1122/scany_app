@@ -11,3 +11,4 @@ class RotateImageState extends CameraState {}
 class ToggleSelectionState extends CameraState {}
 class ProcessImageState extends CameraState {}
 class FinishImageState extends CameraState {}
+class AddCurrentImageSuccessState extends CameraState {}

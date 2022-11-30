@@ -11,124 +11,87 @@ import 'package:scany/presentation/screens/camera_and_detection/edge_detector.da
 import 'package:simple_edge_detection/edge_detection.dart';
 import 'camera_view.dart';
 
-class CameraPreviewScreen extends StatefulWidget {
+class CameraPreviewScreen extends StatelessWidget {
   const CameraPreviewScreen({Key? key}) : super(key: key);
 
-  @override
-  State<CameraPreviewScreen> createState() => _CameraPreviewScreenState();
-}
-
-class _CameraPreviewScreenState extends State<CameraPreviewScreen> {
   @override
   Widget build(BuildContext context) {
     BlocProvider.of<CameraCubit>(context).initializeController();
     return BlocConsumer<CameraCubit, CameraState>(
-      listener: (context, state) {
-      },
+      listener: (context, state) {},
       builder: (context, state) {
         return Scaffold(
           appBar: AppBar(
-            actions: [
-              IconButton(
-                onPressed: () async {
-                  // if (BlocProvider.of<CameraCubit>(context).croppedImagePath ==
-                  //     null) {
-                  //   await BlocProvider.of<CameraCubit>(context).processImage(
-                  //       BlocProvider.of<CameraCubit>(context).imagePath!,
-                  //       BlocProvider.of<CameraCubit>(context)
-                  //           .edgeDetectionResult!);
-                  //   Uint8List img = await File(
-                  //           BlocProvider.of<CameraCubit>(context)
-                  //               .croppedImagePath!)
-                  //       .readAsBytes();
-                  //   Navigator.pop(context, img);
-                  // }
-                },
-                icon: Icon(Icons.check),
-              ),
-            ],
+            leading: IconButton(
+              onPressed: (){
+                BlocProvider.of<CameraCubit>(context).popBack(context);
+              },
+              icon: Icon(Icons.arrow_back_rounded),
+            ),
+            backgroundColor: Colors.black,
           ),
-          body: Stack(
-            children: <Widget>[
-              BlocProvider.of<CameraCubit>(context).controller == null
-                  ? Center(
-                      child: CircularProgressIndicator(),
-                    )
-                  : CameraView(
-                      controller:
-                          BlocProvider.of<CameraCubit>(context).controller!),
-              Padding(
-                  padding: const EdgeInsets.only(bottom: 32),
-                  child: Align(
-                      alignment: Alignment.bottomCenter,
-                      child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            FloatingActionButton(
-                              foregroundColor: Colors.white,
-                              onPressed: () async {
-                                String? filePath = await takePicture();
+          body: Container(
+            color: Colors.black,
+            child: Stack(
+              children: <Widget>[
+                BlocProvider.of<CameraCubit>(context).controller == null ||
+                        BlocProvider.of<CameraCubit>(context)
+                                .controller!
+                                .value
+                                .isInitialized ==
+                            false
+                    ? Center(
+                        child: CircularProgressIndicator(),
+                      )
+                    : CameraView(
+                        controller:
+                            BlocProvider.of<CameraCubit>(context).controller!),
+                Padding(
+                    padding: const EdgeInsets.only(bottom: 32),
+                    child: Align(
+                        alignment: Alignment.bottomCenter,
+                        child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              BlocProvider.of<CameraCubit>(context)
+                                      .images
+                                      .isNotEmpty
+                                  ? CircleAvatar(
+                                      child: Text(
+                                          "${BlocProvider.of<CameraCubit>(context).images.length}"),
+                                    )
+                                  : Container(height: 1,),
+                              FloatingActionButton(
+                                foregroundColor: Colors.white,
+                                onPressed: () async {
+                                  await BlocProvider.of<CameraCubit>(context)
+                                      .takePicture();
 
-                                log('Picture saved to $filePath');
+                                  log('Picture saved to ${BlocProvider.of<CameraCubit>(context).currentImage.imagePath}');
 
-                                await _detectEdges(filePath!);
-                                Navigator.of(context).pushNamed(edgeDetectionPreviewScreen);
-                              },
-                              child: const Icon(Icons.camera_alt),
-                            ),
-                          ]))),
-            ],
+                                  await BlocProvider.of<CameraCubit>(context)
+                                      .detectEdges();
+
+                                  Navigator.of(context)
+                                      .pushNamed(edgeDetectionPreviewScreen);
+                                },
+                                child: const Icon(Icons.camera_alt),
+                                backgroundColor: Colors.black,
+                              ),
+                              BlocProvider.of<CameraCubit>(context)
+                                      .images
+                                      .isNotEmpty
+                                  ? IconButton(
+                                      onPressed: () {
+                                        BlocProvider.of<CameraCubit>(context).newPopBack(context);
+                                      }, icon: CircleAvatar(radius: 20,child: Icon(Icons.done)))
+                                  : Container(height: 1,),
+                            ]))),
+              ],
+            ),
           ),
         );
       },
     );
-  }
-
-  Future<String?> takePicture() async {
-    if (!BlocProvider.of<CameraCubit>(context)
-        .controller!
-        .value
-        .isInitialized) {
-      log('Error: select a camera first.');
-      return null;
-    }
-
-    final Directory extDir = await getTemporaryDirectory();
-    final String dirPath = '${extDir.path}/Pictures/flutter_test';
-    await Directory(dirPath).create(recursive: true);
-    String? filePath;
-
-    if (BlocProvider.of<CameraCubit>(context)
-        .controller!
-        .value
-        .isTakingPicture) {
-      return null;
-    }
-
-    try {
-      XFile image =
-          await BlocProvider.of<CameraCubit>(context).controller!.takePicture();
-      filePath = image.path;
-    } on CameraException catch (e) {
-      log(e.toString());
-      return null;
-    }
-    return filePath;
-  }
-
-  Future _detectEdges(String filePath) async {
-    if (!mounted || filePath == null) {
-      return;
-    }
-
-    setState(() {
-      BlocProvider.of<CameraCubit>(context).imagePath = filePath;
-    });
-
-    EdgeDetectionResult result = await EdgeDetector().detectEdges(filePath);
-
-    setState(() {
-      BlocProvider.of<CameraCubit>(context).edgeDetectionResult = result;
-    });
   }
 }

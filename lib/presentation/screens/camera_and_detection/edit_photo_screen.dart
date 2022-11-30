@@ -8,50 +8,36 @@ import 'package:scany/constants/strings.dart';
 
 import 'image_view.dart';
 
-class EditPhotoScreen extends StatefulWidget {
+class EditPhotoScreen extends StatelessWidget {
   const EditPhotoScreen({super.key});
 
   @override
-  State<EditPhotoScreen> createState() => _EditPhotoScreenState();
-}
-
-class _EditPhotoScreenState extends State<EditPhotoScreen> {
-  @override
   Widget build(BuildContext context) {
     return BlocConsumer<CameraCubit, CameraState>(
-      listener: (context, state) {
-        // TODO: implement listener
-      },
+      listener: (context, state) {},
       builder: (context, state) {
         return Scaffold(
           appBar: AppBar(
+            backgroundColor: Colors.black,
             actions: [
               IconButton(
                 onPressed: () async {
-                  // if (croppedImagePath == null) {
-                  //   await _processImage(imagePath!, edgeDetectionResult!);
-                  //   Uint8List img = await File(croppedImagePath!).readAsBytes();
-                  //   Navigator.pop(context, img);
-                  // }
-
                   BlocProvider.of<CameraCubit>(context).popBack(context);
-
-
                 },
                 icon: Icon(Icons.check),
               ),
             ],
           ),
-          body: Stack(
-            children: <Widget>[
-              ImageView(
-                  imagePath:
-                      BlocProvider.of<CameraCubit>(context).croppedImagePath!),
-            ],
+          body: Container(
+            color: Colors.black,
+            child: Center(
+              child: Image.file(
+                  File(BlocProvider.of<CameraCubit>(context).currentImage.croppedImagePath!),
+                  fit: BoxFit.contain),
+            ),
           ),
         );
       },
     );
   }
 }
-

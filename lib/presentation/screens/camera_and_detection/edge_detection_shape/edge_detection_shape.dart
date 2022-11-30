@@ -40,7 +40,7 @@ class _EdgeDetectionShapeState extends State<EdgeDetectionShape> {
   void didChangeDependencies() {
     double shortestSide = min(
         MediaQuery.of(context).size.width, MediaQuery.of(context).size.height);
-    edgeDraggerSize = shortestSide / 12;
+    edgeDraggerSize = shortestSide / 10;
     super.didChangeDependencies();
   }
 
@@ -64,7 +64,7 @@ class _EdgeDetectionShapeState extends State<EdgeDetectionShape> {
             CustomPaint(
                 painter: EdgePainter(
                     points: points!,
-                    color: Theme.of(context).accentColor.withOpacity(0.5)))
+                    color: Theme.of(context).colorScheme.secondary.withOpacity(0.5)))
           ],
         ));
   }

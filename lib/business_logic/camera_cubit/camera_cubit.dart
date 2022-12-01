@@ -1,7 +1,7 @@
 import 'dart:developer';
 import 'dart:io';
 import 'dart:typed_data';
-
+import 'package:flutter_native_image/flutter_native_image.dart';
 import 'package:bloc/bloc.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
@@ -30,8 +30,11 @@ class CameraCubit extends Cubit<CameraState> {
       return;
     }
 
-    controller =
-        CameraController(cameras[0], ResolutionPreset.max, enableAudio: false);
+    controller = CameraController(
+      cameras[0],
+      ResolutionPreset.max,
+      enableAudio: false,
+    );
     await controller?.initialize();
     emit(ControllerInitializedState());
   }
@@ -84,8 +87,9 @@ class CameraCubit extends Cubit<CameraState> {
     controller = null;
   }
 
-  // new pop for multiple images
+  // new pop after take all images and apply all filters
   void newPopBack(context) async {
+    Navigator.pop(context);
     Navigator.pop(context, images);
     currentImage = DetectedImageModel();
     images = [];
@@ -113,11 +117,29 @@ class CameraCubit extends Cubit<CameraState> {
     try {
       XFile image = await controller!.takePicture();
       filePath = image.path;
+      filePath = await resizePhoto(filePath);
     } on CameraException catch (e) {
       log(e.toString());
       return;
     }
     currentImage.imagePath = filePath;
+  }
+
+  // resize the image to fit the 4/3 aspect ratio
+  Future<String> resizePhoto(String filePath) async {
+    ImageProperties properties =
+        await FlutterNativeImage.getImageProperties(filePath);
+
+    int width = properties.width!;
+    var offset = (properties.height! - 4/3 * properties.width!) / 2;
+
+
+    File croppedFile = await FlutterNativeImage.cropImage(
+        filePath, 0, offset.round(), width, (4 * width ~/ 3));
+
+    await File(filePath).delete();
+
+    return croppedFile.path;
   }
 
   // cubit

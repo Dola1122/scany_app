@@ -42,6 +42,8 @@ dependencies:
   flutter_expandable_fab: ^1.5.2
   reorderable_grid_view: ^2.2.4
   camera: ^0.10.0+4
+  carousel_slider: ^4.1.1
+  flutter_native_image: ^0.0.6
 
   simple_edge_detection:
     path: D:\flutter_projects\simple_edge_detection

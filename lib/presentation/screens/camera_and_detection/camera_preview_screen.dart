@@ -83,7 +83,8 @@ class CameraPreviewScreen extends StatelessWidget {
                                       .isNotEmpty
                                   ? IconButton(
                                       onPressed: () {
-                                        BlocProvider.of<CameraCubit>(context).newPopBack(context);
+                                        // BlocProvider.of<CameraCubit>(context).newPopBack(context);
+                                        Navigator.of(context).pushNamed(editPhotoScreen);
                                       }, icon: CircleAvatar(radius: 20,child: Icon(Icons.done)))
                                   : Container(height: 1,),
                             ]))),

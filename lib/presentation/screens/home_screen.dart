@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:scany/constants/strings.dart';
 
 import '../widgets/custom_bottom_nav_bar.dart';
@@ -15,6 +16,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
     final Size size = MediaQuery.of(context).size;
     return Scaffold(
       // bottomNavigationBar: BottomNavigationBar(

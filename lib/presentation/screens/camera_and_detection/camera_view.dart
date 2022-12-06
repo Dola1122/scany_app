@@ -1,10 +1,13 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:scany/business_logic/camera_cubit/camera_cubit.dart';
 
 class CameraView extends StatelessWidget {
-  CameraView({required this.controller});
 
   final CameraController controller;
+
+  const CameraView({super.key, required this.controller});
 
   @override
   Widget build(BuildContext context) {
@@ -21,13 +24,29 @@ class CameraView extends StatelessWidget {
       height: 4 * size / 3,
       width: size,
       child: ClipRect(
-        child: FittedBox(
-          fit: BoxFit.fitWidth,
-          child: Container(
-            alignment: Alignment.center,
-            width: size,
-            child: CameraPreview(controller), // this is my CameraPreview
-          ),
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            FittedBox(
+              fit: BoxFit.fitWidth,
+              child: Container(
+                  alignment: Alignment.center,
+                  width: size,
+                  child: CameraPreview(controller)),
+            ),
+            BlocProvider.of<CameraCubit>(context).focusTaped
+                ? const Center(
+              child: Icon(
+                Icons.center_focus_strong_outlined,
+                color: Colors.red,
+                size: 50,
+              ),
+            )
+                : const SizedBox(
+              height: 0,
+              width: 0,
+            ),
+          ],
         ),
       ),
     );

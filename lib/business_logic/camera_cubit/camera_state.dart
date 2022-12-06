@@ -12,3 +12,6 @@ class ToggleSelectionState extends CameraState {}
 class ProcessImageState extends CameraState {}
 class FinishImageState extends CameraState {}
 class AddCurrentImageSuccessState extends CameraState {}
+class CameraStartFocusState extends CameraState {}
+class CameraEndFocusState extends CameraState {}
+class CameraChangeFlashModeState extends CameraState {}

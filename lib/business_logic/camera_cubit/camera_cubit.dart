@@ -27,6 +27,7 @@ class CameraCubit extends Cubit<CameraState> {
 
   // how much 90 degrees rotation
   int cameraRotation = 0;
+  DeviceOrientation currentCameraOrientation = DeviceOrientation.portraitUp;
 
   // initialize camera controller when go to camera preview
   Future<void> initializeController() async {
@@ -125,11 +126,10 @@ class CameraCubit extends Cubit<CameraState> {
     try {
       XFile image = await controller!.takePicture();
       filePath = image.path;
-      filePath = await resizePhoto(filePath);
-
-      // rotate if needed
-      if(cameraRotation != 0 ){
-        rotateImage(filePath, cameraRotation*-90);
+      if (currentCameraOrientation == DeviceOrientation.portraitUp) {
+        filePath = await resizePortraitPhoto(filePath);
+      } else {
+        filePath = await resizeLandscapePhoto(filePath);
       }
 
     } on CameraException catch (e) {
@@ -155,8 +155,8 @@ class CameraCubit extends Cubit<CameraState> {
     final fixedFile = await croppedImage.writeAsBytes(img.encodePng(newImage));
   }
 
-  // resize the image to fit the 4/3 aspect ratio
-  Future<String> resizePhoto(String filePath) async {
+  // resize the portrait image to fit the 4/3 aspect ratio
+  Future<String> resizePortraitPhoto(String filePath) async {
     ImageProperties properties =
         await FlutterNativeImage.getImageProperties(filePath);
 
@@ -165,6 +165,22 @@ class CameraCubit extends Cubit<CameraState> {
 
     File croppedFile = await FlutterNativeImage.cropImage(
         filePath, 0, offset.round(), width, (4 * width ~/ 3));
+
+    await File(filePath).delete();
+
+    return croppedFile.path;
+  }
+
+  // resize the landscape image to fit the 4/3 aspect ratio
+  Future<String> resizeLandscapePhoto(String filePath) async {
+    ImageProperties properties =
+        await FlutterNativeImage.getImageProperties(filePath);
+
+    int height = properties.height!;
+    var offset = (properties.width! - 4 / 3 * properties.height!) / 2;
+
+    File croppedFile = await FlutterNativeImage.cropImage(
+        filePath, offset.round(), 0, (4 * height ~/ 3), height);
 
     await File(filePath).delete();
 
@@ -233,18 +249,28 @@ class CameraCubit extends Cubit<CameraState> {
   }
 
   // detect camera rotation
-  void detectCameraRotation(DeviceOrientation? deviceOrientation) {
+  Future<void> detectCameraRotation(
+      DeviceOrientation? deviceOrientation) async {
     if (deviceOrientation == null) {
       return;
     }
+    if (deviceOrientation != currentCameraOrientation) {
+      currentCameraOrientation = deviceOrientation;
+      emit(CameraRotatedState());
+    }
     switch (deviceOrientation) {
       case DeviceOrientation.portraitUp:
+        await controller?.lockCaptureOrientation(DeviceOrientation.portraitUp);
         cameraRotation = 0;
         break;
       case DeviceOrientation.landscapeRight:
+        await controller?.lockCaptureOrientation(DeviceOrientation.landscapeLeft);
+
         cameraRotation = 1;
         break;
       case DeviceOrientation.landscapeLeft:
+        await controller?.lockCaptureOrientation(DeviceOrientation.landscapeRight);
+
         cameraRotation = -1;
         break;
       case DeviceOrientation.portraitDown:

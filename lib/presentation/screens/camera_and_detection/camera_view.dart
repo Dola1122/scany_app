@@ -4,7 +4,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:scany/business_logic/camera_cubit/camera_cubit.dart';
 
 class CameraView extends StatelessWidget {
-
   final CameraController controller;
 
   const CameraView({super.key, required this.controller});
@@ -32,20 +31,24 @@ class CameraView extends StatelessWidget {
               child: Container(
                   alignment: Alignment.center,
                   width: size,
-                  child: CameraPreview(controller)),
+                  child: RotatedBox(
+                      quarterTurns:
+                          BlocProvider.of<CameraCubit>(context).cameraRotation
+                              ,
+                      child: CameraPreview(controller))),
             ),
             BlocProvider.of<CameraCubit>(context).focusTaped
                 ? const Center(
-              child: Icon(
-                Icons.center_focus_strong_outlined,
-                color: Colors.red,
-                size: 50,
-              ),
-            )
+                    child: Icon(
+                      Icons.center_focus_strong_outlined,
+                      color: Colors.red,
+                      size: 50,
+                    ),
+                  )
                 : const SizedBox(
-              height: 0,
-              width: 0,
-            ),
+                    height: 0,
+                    width: 0,
+                  ),
           ],
         ),
       ),

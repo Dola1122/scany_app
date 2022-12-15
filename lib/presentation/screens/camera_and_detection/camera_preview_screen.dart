@@ -102,107 +102,108 @@ class CameraPreviewScreen extends StatelessWidget {
                   icon: Icon(Icons.crop_rotate_sharp))
             ],
           ),
-          body: Container(
-            color: Colors.black,
-            child: Stack(
-              children: <Widget>[
-                BlocProvider.of<CameraCubit>(context).controller == null ||
-                        BlocProvider.of<CameraCubit>(context)
-                                .controller!
-                                .value
-                                .isInitialized ==
-                            false
-                    ? Center(
-                        child: CircularProgressIndicator(),
-                      )
-                    : InkWell(
-                        onTap: () async {
-                          await BlocProvider.of<CameraCubit>(context).focus();
-                        },
-                        child: CameraView(
-                            controller: BlocProvider.of<CameraCubit>(context)
-                                .controller!),
-                      ),
-                Padding(
-                    padding: const EdgeInsets.only(bottom: 32),
-                    child: Align(
-                        alignment: Alignment.bottomCenter,
-                        child: StreamBuilder(
-                            stream: deviceOrientation$,
-                            builder: (context, snapshot) {
-                              BlocProvider.of<CameraCubit>(context)
-                                  .detectCameraRotation(snapshot.data);
-                              return Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  children: [
+          body: StreamBuilder(
+            stream: deviceOrientation$,
+            builder: (context, snapshot) {
+                BlocProvider.of<CameraCubit>(context)
+                  .detectCameraRotation(snapshot.data);
+              return Container(
+                color: Colors.black,
+                child: Stack(
+                  children: <Widget>[
+                    BlocProvider.of<CameraCubit>(context).controller == null ||
+                            BlocProvider.of<CameraCubit>(context)
+                                    .controller!
+                                    .value
+                                    .isInitialized ==
+                                false
+                        ? Center(
+                            child: CircularProgressIndicator(),
+                          )
+                        : InkWell(
+                            onTap: () async {
+                              await BlocProvider.of<CameraCubit>(context)
+                                  .focus();
+                            },
+                            child: CameraView(
+                                controller:
                                     BlocProvider.of<CameraCubit>(context)
-                                            .images
-                                            .isNotEmpty
-                                        ? RotatedBox(
-                                            quarterTurns:
-                                                BlocProvider.of<CameraCubit>(
-                                                        context)
-                                                    .cameraRotation,
-                                            child: CircleAvatar(
-                                              child: Text(
-                                                  "${BlocProvider.of<CameraCubit>(context).images.length}"),
-                                            ),
-                                          )
-                                        : Container(
-                                            height: 1,
+                                        .controller!),
+                          ),
+                    Padding(
+                        padding: const EdgeInsets.only(bottom: 32),
+                        child: Align(
+                            alignment: Alignment.bottomCenter,
+                            child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  BlocProvider.of<CameraCubit>(context)
+                                          .images
+                                          .isNotEmpty
+                                      ? RotatedBox(
+                                          quarterTurns:
+                                              BlocProvider.of<CameraCubit>(
+                                                      context)
+                                                  .cameraRotation,
+                                          child: CircleAvatar(
+                                            child: Text(
+                                                "${BlocProvider.of<CameraCubit>(context).images.length}"),
                                           ),
-                                    RotatedBox(
-                                      quarterTurns:
-                                          BlocProvider.of<CameraCubit>(
-                                                  context)
-                                              .cameraRotation,
-                                      child: FloatingActionButton(
-                                        foregroundColor: Colors.white,
-                                        onPressed: () async {
-                                          await BlocProvider.of<CameraCubit>(
-                                                  context)
-                                              .takePicture();
+                                        )
+                                      : Container(
+                                          height: 1,
+                                        ),
+                                  RotatedBox(
+                                    quarterTurns:
+                                        BlocProvider.of<CameraCubit>(context)
+                                            .cameraRotation,
+                                    child: FloatingActionButton(
+                                      foregroundColor: Colors.white,
+                                      onPressed: () async {
+                                        await BlocProvider.of<CameraCubit>(
+                                                context)
+                                            .takePicture();
 
-                                          log('Picture saved to ${BlocProvider.of<CameraCubit>(context).currentImage.imagePath}');
+                                        log('Picture saved to ${BlocProvider.of<CameraCubit>(context).currentImage.imagePath}');
 
-                                          await BlocProvider.of<CameraCubit>(
-                                                  context)
-                                              .detectEdges();
+                                        await BlocProvider.of<CameraCubit>(
+                                                context)
+                                            .detectEdges();
 
-                                          Navigator.of(context).pushNamed(
-                                              edgeDetectionPreviewScreen);
-                                        },
-                                        child: const Icon(Icons.camera_alt),
-                                        backgroundColor: Colors.black,
-                                      ),
+                                        Navigator.of(context).pushNamed(
+                                            edgeDetectionPreviewScreen);
+                                      },
+                                      child: const Icon(Icons.camera_alt),
+                                      backgroundColor: Colors.black,
                                     ),
-                                    BlocProvider.of<CameraCubit>(context)
-                                            .images
-                                            .isNotEmpty
-                                        ? RotatedBox(
-                                            quarterTurns:
-                                                BlocProvider.of<CameraCubit>(
-                                                        context)
-                                                    .cameraRotation,
-                                            child: IconButton(
-                                                onPressed: () {
-                                                  // BlocProvider.of<CameraCubit>(context).newPopBack(context);
-                                                  Navigator.of(context)
-                                                      .pushNamed(
-                                                          editPhotoScreen);
-                                                },
-                                                icon: CircleAvatar(
-                                                    radius: 20,
-                                                    child: Icon(Icons.done))),
-                                          )
-                                        : Container(
-                                            height: 1,
-                                          ),
-                                  ]);
-                            }))),
-              ],
-            ),
+                                  ),
+                                  BlocProvider.of<CameraCubit>(context)
+                                          .images
+                                          .isNotEmpty
+                                      ? RotatedBox(
+                                          quarterTurns:
+                                              BlocProvider.of<CameraCubit>(
+                                                      context)
+                                                  .cameraRotation,
+                                          child: IconButton(
+                                              onPressed: () {
+                                                // BlocProvider.of<CameraCubit>(context).newPopBack(context);
+                                                Navigator.of(context)
+                                                    .pushNamed(editPhotoScreen);
+                                              },
+                                              icon: CircleAvatar(
+                                                  radius: 20,
+                                                  child: Icon(Icons.done))),
+                                        )
+                                      : Container(
+                                          height: 1,
+                                        ),
+                                ]))),
+                  ],
+                ),
+              );
+            },
           ),
         );
       },

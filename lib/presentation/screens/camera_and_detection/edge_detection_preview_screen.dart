@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:scany/business_logic/camera_cubit/camera_cubit.dart';
@@ -28,7 +30,19 @@ class EdgeDetectionPreviewScreen extends StatelessWidget {
                       size: 30,
                       color: Colors.white,
                     ),
-                    onPressed: () {},
+                    onPressed: () async{
+                      debugPrint("${BlocProvider.of<CameraCubit>(context).currentImage.edgeDetectionResult?.topLeft.dx} , ${BlocProvider.of<CameraCubit>(context).currentImage.edgeDetectionResult?.topLeft.dy}");
+                      debugPrint("${BlocProvider.of<CameraCubit>(context).currentImage.edgeDetectionResult?.topRight.dx} , ${BlocProvider.of<CameraCubit>(context).currentImage.edgeDetectionResult?.topRight.dy}");
+                      debugPrint("${BlocProvider.of<CameraCubit>(context).currentImage.edgeDetectionResult?.bottomRight.dx} , ${BlocProvider.of<CameraCubit>(context).currentImage.edgeDetectionResult?.bottomRight.dy}");
+                      debugPrint("${BlocProvider.of<CameraCubit>(context).currentImage.edgeDetectionResult?.bottomLeft.dx} , ${BlocProvider.of<CameraCubit>(context).currentImage.edgeDetectionResult?.bottomLeft.dy}");
+                      await BlocProvider.of<CameraCubit>(context)
+                          .rotateImageModel(BlocProvider.of<CameraCubit>(context).currentImage, -90);
+                      BlocProvider.of<CameraCubit>(context).currentImage.edgeDetectionResult?.rotateDetectionResult(-90);
+                      debugPrint("${BlocProvider.of<CameraCubit>(context).currentImage.edgeDetectionResult?.topLeft.dx} , ${BlocProvider.of<CameraCubit>(context).currentImage.edgeDetectionResult?.topLeft.dy}");
+                      debugPrint("${BlocProvider.of<CameraCubit>(context).currentImage.edgeDetectionResult?.topRight.dx} , ${BlocProvider.of<CameraCubit>(context).currentImage.edgeDetectionResult?.topRight.dy}");
+                      debugPrint("${BlocProvider.of<CameraCubit>(context).currentImage.edgeDetectionResult?.bottomRight.dx} , ${BlocProvider.of<CameraCubit>(context).currentImage.edgeDetectionResult?.bottomRight.dy}");
+                      debugPrint("${BlocProvider.of<CameraCubit>(context).currentImage.edgeDetectionResult?.bottomLeft.dx} , ${BlocProvider.of<CameraCubit>(context).currentImage.edgeDetectionResult?.bottomLeft.dy}");
+                    },
                   ),
                   IconButton(
                     icon: Icon(
@@ -36,7 +50,11 @@ class EdgeDetectionPreviewScreen extends StatelessWidget {
                       size: 30,
                       color: Colors.white,
                     ),
-                    onPressed: () {},
+                    onPressed: () async{
+                      await BlocProvider.of<CameraCubit>(context)
+                          .rotateImageModel(BlocProvider.of<CameraCubit>(context).currentImage, 90);
+                      BlocProvider.of<CameraCubit>(context).currentImage.edgeDetectionResult?.rotateDetectionResult(90);
+                    },
                   ),
                   IconButton(
                     icon: Icon(

@@ -169,7 +169,7 @@ class CameraPreviewScreen extends StatelessWidget {
 
                                         await BlocProvider.of<CameraCubit>(
                                                 context)
-                                            .detectEdges();
+                                            .currentImage.detectCurrentImageEdges();
 
                                         Navigator.of(context).pushNamed(
                                             edgeDetectionPreviewScreen);

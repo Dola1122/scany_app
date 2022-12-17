@@ -16,3 +16,4 @@ class CameraStartFocusState extends CameraState {}
 class CameraEndFocusState extends CameraState {}
 class CameraChangeFlashModeState extends CameraState {}
 class CameraRotatedState extends CameraState {}
+class ImageModelRotatedState extends CameraState {}

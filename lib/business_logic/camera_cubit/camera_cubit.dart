@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:scany/data/models/detected_image_model.dart';
+import 'package:scany/data/repository/edge_detection_helper.dart';
 import 'package:scany/presentation/screens/camera_and_detection/edge_detector.dart';
 import 'package:simple_edge_detection/edge_detection.dart';
 import 'package:image/image.dart' as img;
@@ -24,6 +25,7 @@ class CameraCubit extends Cubit<CameraState> {
   List<DetectedImageModel> images = [];
   late String flashMode;
   bool focusTaped = false;
+  int currentImageIndex = 0;
 
   // how much 90 degrees rotation
   int cameraRotation = 0;
@@ -50,41 +52,10 @@ class CameraCubit extends Cubit<CameraState> {
 
   // add current image and push to camera to take another image
   Future<void> addCurrentImage() async {
-    await processImage();
+    await currentImage.cropDetectedImage();
     images.add(currentImage);
     currentImage = DetectedImageModel();
     emit(AddCurrentImageSuccessState());
-  }
-
-  // detect edges for the image
-  Future<void> detectEdges() async {
-    if (currentImage.imagePath == null) {
-      return;
-    }
-    currentImage.edgeDetectionResult =
-        await EdgeDetector().detectEdges(currentImage.imagePath!);
-  }
-
-  // crop image
-  Future<void> processImage() async {
-    if (currentImage.imagePath == null) {
-      return;
-    }
-    final Directory extDir = await getTemporaryDirectory();
-    final String dirPath = '${extDir.path}/${DateTime.now()}.jpg';
-    // await Directory(dirPath).create(recursive: true);
-    log("process image function filepath1 ${currentImage.imagePath}");
-    log("process image function dirpath2 ${dirPath}");
-    await File(currentImage.imagePath!).copy(dirPath);
-    bool result = await EdgeDetector()
-        .processImage(dirPath, currentImage.edgeDetectionResult!);
-
-    if (result == false) {
-      return;
-    }
-    imageCache.clearLiveImages();
-    imageCache.clear();
-    currentImage.croppedImagePath = dirPath!;
   }
 
   // regular pop to new pdf screen
@@ -131,7 +102,6 @@ class CameraCubit extends Cubit<CameraState> {
       } else {
         filePath = await resizeLandscapePhoto(filePath);
       }
-
     } on CameraException catch (e) {
       log(e.toString());
       return;
@@ -139,10 +109,26 @@ class CameraCubit extends Cubit<CameraState> {
     currentImage.imagePath = filePath;
   }
 
+  // rotate image model
+  Future<void> rotateImageModel(DetectedImageModel image, angle) async {
+    if (image.imagePath != null) {
+      await rotateImage(image.imagePath ?? "", angle);
+    }
+    if (image.croppedImagePath != null) {
+      await rotateImage(image.croppedImagePath ?? "", angle);
+    }
+    // await image.detectCurrentImageEdges();
+
+    emit(ImageModelRotatedState());
+  }
+
   // rotate image with path and angle
-  Future<void> rotateImage(String imagePath, int angle) async {
+  Future<void> rotateImage(String? imagePath, int angle) async {
     log("the angle = $angle");
-    File croppedImage = File(imagePath);
+    log("the imagePath = $imagePath");
+    File croppedImage = File(imagePath!);
+
+    Future<Directory> path = getTemporaryDirectory();
 
     final img.Image? capturedImage =
         img.decodeImage(await croppedImage.readAsBytes());
@@ -151,8 +137,16 @@ class CameraCubit extends Cubit<CameraState> {
       capturedImage!,
       angle,
     );
+    log("live images count = ${imageCache.liveImageCount}");
 
-    final fixedFile = await croppedImage.writeAsBytes(img.encodePng(newImage));
+    imageCache.clearLiveImages();
+    imageCache.clear();
+
+    log("live images count = ${imageCache.liveImageCount}");
+
+    final fixedFile = await croppedImage.writeAsBytes(img.encodeJpg(newImage));
+
+    log("new image path = ${fixedFile.path}");
   }
 
   // resize the portrait image to fit the 4/3 aspect ratio
@@ -264,12 +258,14 @@ class CameraCubit extends Cubit<CameraState> {
         cameraRotation = 0;
         break;
       case DeviceOrientation.landscapeRight:
-        await controller?.lockCaptureOrientation(DeviceOrientation.landscapeLeft);
+        await controller
+            ?.lockCaptureOrientation(DeviceOrientation.landscapeLeft);
 
         cameraRotation = 1;
         break;
       case DeviceOrientation.landscapeLeft:
-        await controller?.lockCaptureOrientation(DeviceOrientation.landscapeRight);
+        await controller
+            ?.lockCaptureOrientation(DeviceOrientation.landscapeRight);
 
         cameraRotation = -1;
         break;

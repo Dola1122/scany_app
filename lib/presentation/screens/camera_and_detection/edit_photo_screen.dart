@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -43,15 +44,15 @@ class EditPhotoScreen extends StatelessWidget {
                         size: 30,
                         color: Colors.white,
                       ),
-                      onPressed: () {},
-                    ),
-                    IconButton(
-                      icon: Icon(
-                        Icons.rotate_right_rounded,
-                        size: 30,
-                        color: Colors.white,
-                      ),
-                      onPressed: () {},
+                      onPressed: () async {
+                        await BlocProvider.of<CameraCubit>(context)
+                            .rotateImageModel(
+                                BlocProvider.of<CameraCubit>(context).images[
+                                    BlocProvider.of<CameraCubit>(context)
+                                        .currentImageIndex],
+                                -90);
+
+                      },
                     ),
                     IconButton(
                       icon: Icon(
@@ -88,15 +89,21 @@ class EditPhotoScreen extends StatelessWidget {
                     ),
                 itemCount: BlocProvider.of<CameraCubit>(context).images.length,
                 itemBuilder:
-                    (BuildContext context, int itemIndex, int pageViewIndex) =>
-                        Center(
-                  child: Image.file(
-                    File(BlocProvider.of<CameraCubit>(context)
-                        .images[itemIndex]
-                        .croppedImagePath!),
-                    fit: BoxFit.contain,
-                  ),
-                ),
+                    (BuildContext context, int itemIndex, int pageViewIndex) {
+                  log("builded");
+                  BlocProvider.of<CameraCubit>(context).currentImageIndex =
+                      pageViewIndex;
+                  return Center(
+                    child: Image.file(
+                      File(
+                        BlocProvider.of<CameraCubit>(context)
+                            .images[itemIndex]
+                            .croppedImagePath!,
+                      ),
+                      fit: BoxFit.contain,
+                    ),
+                  );
+                },
               ),
             )
             // Container(

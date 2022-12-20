@@ -11,7 +11,7 @@ import 'package:scany/constants/strings.dart';
 import 'image_view.dart';
 
 class EditPhotoScreen extends StatelessWidget {
-  const EditPhotoScreen({super.key});
+  const EditPhotoScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -51,7 +51,11 @@ class EditPhotoScreen extends StatelessWidget {
                                     BlocProvider.of<CameraCubit>(context)
                                         .currentImageIndex],
                                 -90);
-
+                        BlocProvider.of<CameraCubit>(context)
+                            .images[BlocProvider.of<CameraCubit>(context)
+                                .currentImageIndex]
+                            .edgeDetectionResult
+                            ?.rotateDetectionResult(-90);
                       },
                     ),
                     IconButton(
@@ -91,6 +95,7 @@ class EditPhotoScreen extends StatelessWidget {
                 itemBuilder:
                     (BuildContext context, int itemIndex, int pageViewIndex) {
                   log("builded");
+                  log("${BlocProvider.of<CameraCubit>(context).images[itemIndex].croppedImagePath}");
                   BlocProvider.of<CameraCubit>(context).currentImageIndex =
                       pageViewIndex;
                   return Center(
@@ -101,6 +106,7 @@ class EditPhotoScreen extends StatelessWidget {
                             .croppedImagePath!,
                       ),
                       fit: BoxFit.contain,
+                        key: GlobalKey(),
                     ),
                   );
                 },

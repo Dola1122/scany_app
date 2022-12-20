@@ -117,8 +117,6 @@ class CameraCubit extends Cubit<CameraState> {
     if (image.croppedImagePath != null) {
       await rotateImage(image.croppedImagePath ?? "", angle);
     }
-    // await image.detectCurrentImageEdges();
-
     emit(ImageModelRotatedState());
   }
 

@@ -96,7 +96,7 @@ class _NewPdfScreenState extends State<NewPdfScreen> {
             style: const TextStyle(color: Colors.white),
             decoration: const InputDecoration(
               hintText: "file name",
-              hintStyle: TextStyle(color: Colors.white),
+              hintStyle: TextStyle(color: Colors.grey),
               border: InputBorder.none,
             ),
           ),
@@ -130,7 +130,10 @@ class _NewPdfScreenState extends State<NewPdfScreen> {
         ),
         body: images.isEmpty
             ? Center(
-                child: Text("no pages added"),
+                child: Text(
+                  "No pages, Try add new pages",
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
               )
             : Container(
                 width: double.infinity,

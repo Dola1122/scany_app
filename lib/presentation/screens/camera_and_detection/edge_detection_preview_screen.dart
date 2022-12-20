@@ -30,18 +30,16 @@ class EdgeDetectionPreviewScreen extends StatelessWidget {
                       size: 30,
                       color: Colors.white,
                     ),
-                    onPressed: () async{
-                      debugPrint("${BlocProvider.of<CameraCubit>(context).currentImage.edgeDetectionResult?.topLeft.dx} , ${BlocProvider.of<CameraCubit>(context).currentImage.edgeDetectionResult?.topLeft.dy}");
-                      debugPrint("${BlocProvider.of<CameraCubit>(context).currentImage.edgeDetectionResult?.topRight.dx} , ${BlocProvider.of<CameraCubit>(context).currentImage.edgeDetectionResult?.topRight.dy}");
-                      debugPrint("${BlocProvider.of<CameraCubit>(context).currentImage.edgeDetectionResult?.bottomRight.dx} , ${BlocProvider.of<CameraCubit>(context).currentImage.edgeDetectionResult?.bottomRight.dy}");
-                      debugPrint("${BlocProvider.of<CameraCubit>(context).currentImage.edgeDetectionResult?.bottomLeft.dx} , ${BlocProvider.of<CameraCubit>(context).currentImage.edgeDetectionResult?.bottomLeft.dy}");
+                    onPressed: () async {
                       await BlocProvider.of<CameraCubit>(context)
-                          .rotateImageModel(BlocProvider.of<CameraCubit>(context).currentImage, -90);
-                      BlocProvider.of<CameraCubit>(context).currentImage.edgeDetectionResult?.rotateDetectionResult(-90);
-                      debugPrint("${BlocProvider.of<CameraCubit>(context).currentImage.edgeDetectionResult?.topLeft.dx} , ${BlocProvider.of<CameraCubit>(context).currentImage.edgeDetectionResult?.topLeft.dy}");
-                      debugPrint("${BlocProvider.of<CameraCubit>(context).currentImage.edgeDetectionResult?.topRight.dx} , ${BlocProvider.of<CameraCubit>(context).currentImage.edgeDetectionResult?.topRight.dy}");
-                      debugPrint("${BlocProvider.of<CameraCubit>(context).currentImage.edgeDetectionResult?.bottomRight.dx} , ${BlocProvider.of<CameraCubit>(context).currentImage.edgeDetectionResult?.bottomRight.dy}");
-                      debugPrint("${BlocProvider.of<CameraCubit>(context).currentImage.edgeDetectionResult?.bottomLeft.dx} , ${BlocProvider.of<CameraCubit>(context).currentImage.edgeDetectionResult?.bottomLeft.dy}");
+                          .rotateImageModel(
+                              BlocProvider.of<CameraCubit>(context)
+                                  .currentImage,
+                              -90);
+                      BlocProvider.of<CameraCubit>(context)
+                          .currentImage
+                          .edgeDetectionResult
+                          ?.rotateDetectionResult(-90);
                     },
                   ),
                   IconButton(
@@ -50,20 +48,43 @@ class EdgeDetectionPreviewScreen extends StatelessWidget {
                       size: 30,
                       color: Colors.white,
                     ),
-                    onPressed: () async{
+                    onPressed: () async {
                       await BlocProvider.of<CameraCubit>(context)
-                          .rotateImageModel(BlocProvider.of<CameraCubit>(context).currentImage, 90);
-                      BlocProvider.of<CameraCubit>(context).currentImage.edgeDetectionResult?.rotateDetectionResult(90);
+                          .rotateImageModel(
+                              BlocProvider.of<CameraCubit>(context)
+                                  .currentImage,
+                              90);
+                      BlocProvider.of<CameraCubit>(context)
+                          .currentImage
+                          .edgeDetectionResult
+                          ?.rotateDetectionResult(90);
                     },
                   ),
-                  IconButton(
-                    icon: Icon(
-                      Icons.expand_rounded,
-                      size: 30,
-                      color: Colors.white,
-                    ),
-                    onPressed: () {},
-                  ),
+                  BlocProvider.of<CameraCubit>(context)
+                          .currentImage
+                          .autoDetection
+                      ? IconButton(
+                          icon: Icon(
+                            Icons.expand_rounded,
+                            size: 30,
+                            color: Colors.white,
+                          ),
+                          onPressed: () {
+                            BlocProvider.of<CameraCubit>(context)
+                                .toggleDetection();
+                          },
+                        )
+                      : IconButton(
+                          icon: Icon(
+                            Icons.select_all,
+                            size: 30,
+                            color: Colors.white,
+                          ),
+                          onPressed: () {
+                            BlocProvider.of<CameraCubit>(context)
+                                .toggleDetection();
+                          },
+                        ),
                   IconButton(
                     icon: Icon(
                       Icons.arrow_forward_ios_rounded,
@@ -75,7 +96,7 @@ class EdgeDetectionPreviewScreen extends StatelessWidget {
                       await BlocProvider.of<CameraCubit>(context)
                           .addCurrentImage();
                     },
-                  )
+                  ),
                 ],
               ),
             ),

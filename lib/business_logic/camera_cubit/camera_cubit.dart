@@ -273,6 +273,11 @@ class CameraCubit extends Cubit<CameraState> {
     }
   }
 
+  void toggleDetection() {
+    currentImage.toggleDetection();
+    emit(ToggleDetectionState());
+  }
+
   // cubit
   @override
   void onChange(Change<CameraState> change) {

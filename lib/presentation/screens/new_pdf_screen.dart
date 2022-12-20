@@ -1,12 +1,17 @@
+import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:reorderable_grid_view/reorderable_grid_view.dart';
+import 'package:scany/data/models/detected_image_model.dart';
+import 'package:scany/data/repository/edge_detection_helper.dart';
 import 'package:scany/data/repository/pdf_helper.dart';
 import 'package:flutter_expandable_fab/flutter_expandable_fab.dart';
 import 'package:pdf/widgets.dart' as pw;
+import 'package:scany/presentation/screens/camera_and_detection/scan.dart';
 import '../../constants/strings.dart';
 import '../../data/repository/images_helper.dart';
 import '../widgets/image_page.dart';
+import 'camera_and_detection/camera_preview_screen.dart';
 
 class NewPdfScreen extends StatefulWidget {
   const NewPdfScreen({Key? key}) : super(key: key);
@@ -54,13 +59,26 @@ class _NewPdfScreenState extends State<NewPdfScreen> {
               heroTag: "camera",
               child: const Icon(Icons.camera_alt_outlined),
               onPressed: () async {
-                Uint8List? imageJpg = await ImagesHelper.getImageFromCamera();
+                ////Uint8List? imageJpg = await EdgeDetectionHelper().getImage();
+                // ImagesHelper.getImageFromCamera();
 
-                if (imageJpg != null) {
-                  setState(() {
-                    images.add(imageJpg);
-                  });
+                List<DetectedImageModel> detectedImages = [];
+                List<DetectedImageModel>? newImages =
+                    await Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => CameraPreviewScreen(),
+                  ),
+                );
+
+                if (newImages != null) {
+                  detectedImages.addAll(newImages);
+                  for (int i = 0; i < newImages.length; i++) {
+                    Uint8List img = await File(newImages[i].croppedImagePath!)
+                        .readAsBytes();
+                    images.add(img);
+                  }
                 }
+                setState(() {});
 
                 // open and close FAB
                 final state = _key.currentState;
@@ -78,7 +96,7 @@ class _NewPdfScreenState extends State<NewPdfScreen> {
             style: const TextStyle(color: Colors.white),
             decoration: const InputDecoration(
               hintText: "file name",
-              hintStyle: TextStyle(color: Colors.white),
+              hintStyle: TextStyle(color: Colors.grey),
               border: InputBorder.none,
             ),
           ),
@@ -112,7 +130,10 @@ class _NewPdfScreenState extends State<NewPdfScreen> {
         ),
         body: images.isEmpty
             ? Center(
-                child: Text("no pages added"),
+                child: Text(
+                  "No pages, Try add new pages",
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
               )
             : Container(
                 width: double.infinity,

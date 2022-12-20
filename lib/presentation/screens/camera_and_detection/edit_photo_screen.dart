@@ -82,22 +82,21 @@ class EditPhotoScreen extends StatelessWidget {
               color: Colors.black87,
               child: CarouselSlider.builder(
                 options: CarouselOptions(
-                    autoPlay: false,
-                    enlargeCenterPage: true,
-                    enableInfiniteScroll: false,
-                    height: double.infinity
-
-                    // viewportFraction: 0.9,
-                    // aspectRatio: 2.0,
-                    // initialPage: 2,
-                    ),
+                  autoPlay: false,
+                  enlargeCenterPage: true,
+                  enableInfiniteScroll: false,
+                  height: double.infinity,
+                  onPageChanged: (index, reason) {
+                    BlocProvider.of<CameraCubit>(context).currentImageIndex =
+                        index;
+                  },
+                  // viewportFraction: 0.9,
+                  // aspectRatio: 2.0,
+                  // initialPage: 2,
+                ),
                 itemCount: BlocProvider.of<CameraCubit>(context).images.length,
                 itemBuilder:
                     (BuildContext context, int itemIndex, int pageViewIndex) {
-                  log("builded");
-                  log("${BlocProvider.of<CameraCubit>(context).images[itemIndex].croppedImagePath}");
-                  BlocProvider.of<CameraCubit>(context).currentImageIndex =
-                      pageViewIndex;
                   return Center(
                     child: Image.file(
                       File(
@@ -106,7 +105,7 @@ class EditPhotoScreen extends StatelessWidget {
                             .croppedImagePath!,
                       ),
                       fit: BoxFit.contain,
-                        key: GlobalKey(),
+                      key: GlobalKey(),
                     ),
                   );
                 },

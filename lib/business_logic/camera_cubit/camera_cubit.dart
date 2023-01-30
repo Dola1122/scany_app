@@ -10,6 +10,7 @@ import 'package:meta/meta.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:scany/data/models/detected_image_model.dart';
 import 'package:scany/data/repository/edge_detection_helper.dart';
+import 'package:scany/data/repository/images_helper.dart';
 import 'package:scany/presentation/screens/camera_and_detection/edge_detector.dart';
 import 'package:simple_edge_detection/edge_detection.dart';
 import 'package:image/image.dart' as img;
@@ -112,39 +113,12 @@ class CameraCubit extends Cubit<CameraState> {
   // rotate image model
   Future<void> rotateImageModel(DetectedImageModel image, angle) async {
     if (image.imagePath != null) {
-      await rotateImage(image.imagePath ?? "", angle);
+      await ImagesHelper.rotateImage(image.imagePath ?? "", angle);
     }
     if (image.croppedImagePath != null) {
-      await rotateImage(image.croppedImagePath ?? "", angle);
+      await ImagesHelper.rotateImage(image.croppedImagePath ?? "", angle);
     }
     emit(ImageModelRotatedState());
-  }
-
-  // rotate image with path and angle
-  Future<void> rotateImage(String? imagePath, int angle) async {
-    log("the angle = $angle");
-    log("the imagePath = $imagePath");
-    File croppedImage = File(imagePath!);
-
-    Future<Directory> path = getTemporaryDirectory();
-
-    final img.Image? capturedImage =
-        img.decodeImage(await croppedImage.readAsBytes());
-
-    img.Image newImage = img.copyRotate(
-      capturedImage!,
-      angle,
-    );
-    log("live images count = ${imageCache.liveImageCount}");
-
-    imageCache.clearLiveImages();
-    imageCache.clear();
-
-    log("live images count = ${imageCache.liveImageCount}");
-
-    final fixedFile = await croppedImage.writeAsBytes(img.encodeJpg(newImage));
-
-    log("new image path = ${fixedFile.path}");
   }
 
   // resize the portrait image to fit the 4/3 aspect ratio

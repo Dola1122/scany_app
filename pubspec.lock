@@ -481,7 +481,7 @@ packages:
   simple_edge_detection:
     dependency: "direct main"
     description:
-      path: "D:\\flutter_projects\\simple_edge_detection"
+      path: "C:\\ahmed\\flutter_projects\\simple_edge_detection"
       relative: false
     source: path
     version: "0.0.1"

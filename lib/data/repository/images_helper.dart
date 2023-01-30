@@ -1,5 +1,10 @@
+import 'dart:developer';
+import 'dart:io';
 import 'dart:typed_data';
+import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:image/image.dart' as img;
 
 class ImagesHelper {
 
@@ -26,5 +31,31 @@ class ImagesHelper {
     }
     print("No Image Selected");
     return null;
+  }
+  // rotate image with path and angle
+  static Future<void> rotateImage(String? imagePath, int angle) async {
+    log("the angle = $angle");
+    log("the imagePath = $imagePath");
+    File croppedImage = File(imagePath!);
+
+    Future<Directory> path = getTemporaryDirectory();
+
+    final img.Image? capturedImage =
+    img.decodeImage(await croppedImage.readAsBytes());
+
+    img.Image newImage = img.copyRotate(
+      capturedImage!,
+      angle,
+    );
+    log("live images count = ${imageCache.liveImageCount}");
+
+    imageCache.clearLiveImages();
+    imageCache.clear();
+
+    log("live images count = ${imageCache.liveImageCount}");
+
+    final fixedFile = await croppedImage.writeAsBytes(img.encodeJpg(newImage));
+
+    log("new image path = ${fixedFile.path}");
   }
 }

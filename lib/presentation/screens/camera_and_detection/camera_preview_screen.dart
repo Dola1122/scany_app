@@ -190,7 +190,7 @@ class CameraPreviewScreen extends StatelessWidget {
                                               onPressed: () {
                                                 // BlocProvider.of<CameraCubit>(context).newPopBack(context);
                                                 Navigator.of(context)
-                                                    .pushNamed(editPhotoScreen);
+                                                    .pushNamed(editCapturedImageScreen);
                                               },
                                               icon: CircleAvatar(
                                                   radius: 20,

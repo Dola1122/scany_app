@@ -6,3 +6,4 @@ abstract class NewPdfState {}
 class NewPdfInitial extends NewPdfState {}
 class NewPdfToggleFABState extends NewPdfState {}
 class NewPdfReorderPagesState extends NewPdfState {}
+class NewPdfImageModelRotatedState extends NewPdfState {}

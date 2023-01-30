@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:scany/constants/strings.dart';
 
-import '../widgets/custom_bottom_nav_bar.dart';
+import '../../widgets/custom_bottom_nav_bar.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);

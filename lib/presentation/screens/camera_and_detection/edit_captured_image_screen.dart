@@ -10,8 +10,8 @@ import 'package:scany/constants/strings.dart';
 
 import 'image_view.dart';
 
-class EditPhotoScreen extends StatelessWidget {
-  const EditPhotoScreen({Key? key}) : super(key: key);
+class EditCapturedImageScreen extends StatelessWidget {
+  const EditCapturedImageScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

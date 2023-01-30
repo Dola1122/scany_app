@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_expandable_fab/flutter_expandable_fab.dart';
 import 'package:meta/meta.dart';
 import 'package:scany/data/models/detected_image_model.dart';
+import 'package:scany/data/repository/images_helper.dart';
 import 'package:scany/data/repository/pdf_helper.dart';
 
 part 'new_pdf_state.dart';
@@ -44,9 +45,20 @@ class NewPdfCubit extends Cubit<NewPdfState> {
     await PdfHelper.openFile(pdfFile);
   }
 
-  void reorderTwoPages(int oldIndex,int newIndex) {
+  void reorderTwoPages(int oldIndex, int newIndex) {
     final element = detectedImages.removeAt(oldIndex);
     detectedImages.insert(newIndex, element);
     emit(NewPdfReorderPagesState());
+  }
+
+  // rotate image model
+  Future<void> rotateImageModel(DetectedImageModel image, angle) async {
+    if (image.imagePath != null) {
+      await ImagesHelper.rotateImage(image.imagePath ?? "", angle);
+    }
+    if (image.croppedImagePath != null) {
+      await ImagesHelper.rotateImage(image.croppedImagePath ?? "", angle);
+    }
+    emit(NewPdfImageModelRotatedState());
   }
 }

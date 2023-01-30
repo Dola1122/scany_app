@@ -9,7 +9,6 @@ import 'package:scany/data/repository/edge_detection_helper.dart';
 import 'package:scany/data/repository/pdf_helper.dart';
 import 'package:flutter_expandable_fab/flutter_expandable_fab.dart';
 import 'package:pdf/widgets.dart' as pw;
-import 'package:scany/presentation/screens/camera_and_detection/scan.dart';
 import '../../../constants/strings.dart';
 import '../../../data/repository/images_helper.dart';
 import '../../widgets/image_page.dart';
@@ -135,7 +134,9 @@ class _NewPdfScreenState extends State<NewPdfScreen> {
                           return InkWell(
                             key: Key("$index"),
                             onTap: () {
-                              Navigator.of(context).pushNamed(editPhotoScreen);
+                              Navigator.of(context).pushNamed(
+                                  editDetectedImageScreen,
+                                  arguments: index);
                             },
                             child: ImagePage(
                               imagePath: BlocProvider.of<NewPdfCubit>(context)

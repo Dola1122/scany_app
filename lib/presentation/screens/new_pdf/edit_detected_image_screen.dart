@@ -10,9 +10,9 @@ import 'package:scany/business_logic/new_pdf_cubit/new_pdf_cubit.dart';
 import 'package:scany/constants/strings.dart';
 
 class EditDetectedImageScreen extends StatelessWidget {
+  final int index;
 
-  int index;
-  EditDetectedImageScreen({super.key, required this.index});
+  const EditDetectedImageScreen({super.key, required this.index});
 
   @override
   Widget build(BuildContext context) {
@@ -22,14 +22,6 @@ class EditDetectedImageScreen extends StatelessWidget {
         return Scaffold(
             appBar: AppBar(
               backgroundColor: Colors.black,
-              actions: [
-                IconButton(
-                  onPressed: () async {
-                    // BlocProvider.of<CameraCubit>(context).newPopBack(context);
-                  },
-                  icon: Icon(Icons.check),
-                ),
-              ],
             ),
             bottomNavigationBar: BottomAppBar(
               color: Colors.black,
@@ -46,15 +38,13 @@ class EditDetectedImageScreen extends StatelessWidget {
                         color: Colors.white,
                       ),
                       onPressed: () async {
-                        await BlocProvider.of<CameraCubit>(context)
+                        await BlocProvider.of<NewPdfCubit>(context)
                             .rotateImageModel(
-                                BlocProvider.of<CameraCubit>(context).images[
-                                    BlocProvider.of<CameraCubit>(context)
-                                        .currentImageIndex],
+                                BlocProvider.of<NewPdfCubit>(context)
+                                    .detectedImages[index],
                                 -90);
-                        BlocProvider.of<CameraCubit>(context)
-                            .images[BlocProvider.of<CameraCubit>(context)
-                                .currentImageIndex]
+                        BlocProvider.of<NewPdfCubit>(context)
+                            .detectedImages[index]
                             .edgeDetectionResult
                             ?.rotateDetectionResult(-90);
                       },
@@ -85,10 +75,12 @@ class EditDetectedImageScreen extends StatelessWidget {
                 color: Colors.black,
                 child: Center(
                   child: Image.file(
-                      File(BlocProvider.of<NewPdfCubit>(context)
-                          .detectedImages[index]
-                          .croppedImagePath!),
-                      fit: BoxFit.contain),
+                    File(BlocProvider.of<NewPdfCubit>(context)
+                        .detectedImages[index]
+                        .croppedImagePath!),
+                    fit: BoxFit.contain,
+                    key: GlobalKey(),
+                  ),
                 ),
               ),
             ));

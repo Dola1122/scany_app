@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
-import 'package:scany/presentation/screens/camera_and_detection/edit_captured_image_screen.dart';
+import 'package:scany/presentation/screens/camera_and_detection/edit_captured_images_screen.dart';
 import 'package:scany/presentation/screens/home/home_screen.dart';
 import 'package:scany/presentation/screens/new_pdf/new_pdf_screen.dart';
 import 'constants/strings.dart';
@@ -22,7 +22,7 @@ class AppRouter {
         );
       case editCapturedImageScreen:
         return MaterialPageRoute(
-          builder: (_) => EditCapturedImageScreen(),
+          builder: (_) => EditCapturedImagesScreen(),
         );
       case cameraPreviewScreen:
         return MaterialPageRoute(

@@ -5,17 +5,17 @@ import 'dart:typed_data';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:scany/business_logic/camera_cubit/camera_cubit.dart';
+import 'package:scany/business_logic/from_camera_cubit/form_camera_cubit.dart';
 import 'package:scany/constants/strings.dart';
 
 import 'image_view.dart';
 
-class EditCapturedImageScreen extends StatelessWidget {
-  const EditCapturedImageScreen({Key? key}) : super(key: key);
+class EditCapturedImagesScreen extends StatelessWidget {
+  const EditCapturedImagesScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<CameraCubit, CameraState>(
+    return BlocConsumer<FromCameraCubit, FromCameraState>(
       listener: (context, state) {},
       builder: (context, state) {
         return Scaffold(
@@ -24,7 +24,7 @@ class EditCapturedImageScreen extends StatelessWidget {
               actions: [
                 IconButton(
                   onPressed: () async {
-                    BlocProvider.of<CameraCubit>(context).newPopBack(context);
+                    BlocProvider.of<FromCameraCubit>(context).newPopBack(context);
                   },
                   icon: Icon(Icons.check),
                 ),
@@ -45,14 +45,14 @@ class EditCapturedImageScreen extends StatelessWidget {
                         color: Colors.white,
                       ),
                       onPressed: () async {
-                        await BlocProvider.of<CameraCubit>(context)
+                        await BlocProvider.of<FromCameraCubit>(context)
                             .rotateImageModel(
-                                BlocProvider.of<CameraCubit>(context).images[
-                                    BlocProvider.of<CameraCubit>(context)
+                                BlocProvider.of<FromCameraCubit>(context).images[
+                                    BlocProvider.of<FromCameraCubit>(context)
                                         .currentImageIndex],
                                 -90);
-                        BlocProvider.of<CameraCubit>(context)
-                            .images[BlocProvider.of<CameraCubit>(context)
+                        BlocProvider.of<FromCameraCubit>(context)
+                            .images[BlocProvider.of<FromCameraCubit>(context)
                                 .currentImageIndex]
                             .edgeDetectionResult
                             ?.rotateDetectionResult(-90);
@@ -87,20 +87,20 @@ class EditCapturedImageScreen extends StatelessWidget {
                   enableInfiniteScroll: false,
                   height: double.infinity,
                   onPageChanged: (index, reason) {
-                    BlocProvider.of<CameraCubit>(context).currentImageIndex =
+                    BlocProvider.of<FromCameraCubit>(context).currentImageIndex =
                         index;
                   },
                   // viewportFraction: 0.9,
                   // aspectRatio: 2.0,
                   // initialPage: 2,
                 ),
-                itemCount: BlocProvider.of<CameraCubit>(context).images.length,
+                itemCount: BlocProvider.of<FromCameraCubit>(context).images.length,
                 itemBuilder:
                     (BuildContext context, int itemIndex, int pageViewIndex) {
                   return Center(
                     child: Image.file(
                       File(
-                        BlocProvider.of<CameraCubit>(context)
+                        BlocProvider.of<FromCameraCubit>(context)
                             .images[itemIndex]
                             .croppedImagePath!,
                       ),

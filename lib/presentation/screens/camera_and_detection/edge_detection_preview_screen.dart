@@ -2,7 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:scany/business_logic/camera_cubit/camera_cubit.dart';
+import 'package:scany/business_logic/from_camera_cubit/form_camera_cubit.dart';
 import 'package:scany/constants/strings.dart';
 
 import 'cropping preview.dart';
@@ -12,7 +12,7 @@ class EdgeDetectionPreviewScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<CameraCubit, CameraState>(
+    return BlocConsumer<FromCameraCubit, FromCameraState>(
       listener: (context, state) {},
       builder: (context, state) {
         return Scaffold(
@@ -31,12 +31,12 @@ class EdgeDetectionPreviewScreen extends StatelessWidget {
                       color: Colors.white,
                     ),
                     onPressed: () async {
-                      await BlocProvider.of<CameraCubit>(context)
+                      await BlocProvider.of<FromCameraCubit>(context)
                           .rotateImageModel(
-                              BlocProvider.of<CameraCubit>(context)
+                              BlocProvider.of<FromCameraCubit>(context)
                                   .currentImage,
                               -90);
-                      BlocProvider.of<CameraCubit>(context)
+                      BlocProvider.of<FromCameraCubit>(context)
                           .currentImage
                           .edgeDetectionResult
                           ?.rotateDetectionResult(-90);
@@ -49,18 +49,18 @@ class EdgeDetectionPreviewScreen extends StatelessWidget {
                       color: Colors.white,
                     ),
                     onPressed: () async {
-                      await BlocProvider.of<CameraCubit>(context)
+                      await BlocProvider.of<FromCameraCubit>(context)
                           .rotateImageModel(
-                              BlocProvider.of<CameraCubit>(context)
+                              BlocProvider.of<FromCameraCubit>(context)
                                   .currentImage,
                               90);
-                      BlocProvider.of<CameraCubit>(context)
+                      BlocProvider.of<FromCameraCubit>(context)
                           .currentImage
                           .edgeDetectionResult
                           ?.rotateDetectionResult(90);
                     },
                   ),
-                  BlocProvider.of<CameraCubit>(context)
+                  BlocProvider.of<FromCameraCubit>(context)
                           .currentImage
                           .autoDetection
                       ? IconButton(
@@ -70,7 +70,7 @@ class EdgeDetectionPreviewScreen extends StatelessWidget {
                             color: Colors.white,
                           ),
                           onPressed: () {
-                            BlocProvider.of<CameraCubit>(context)
+                            BlocProvider.of<FromCameraCubit>(context)
                                 .toggleDetection();
                           },
                         )
@@ -81,7 +81,7 @@ class EdgeDetectionPreviewScreen extends StatelessWidget {
                             color: Colors.white,
                           ),
                           onPressed: () {
-                            BlocProvider.of<CameraCubit>(context)
+                            BlocProvider.of<FromCameraCubit>(context)
                                 .toggleDetection();
                           },
                         ),
@@ -93,7 +93,7 @@ class EdgeDetectionPreviewScreen extends StatelessWidget {
                     ),
                     onPressed: () async {
                       Navigator.of(context).pop();
-                      await BlocProvider.of<CameraCubit>(context)
+                      await BlocProvider.of<FromCameraCubit>(context)
                           .addCurrentImage();
                     },
                   ),
@@ -118,10 +118,10 @@ class EdgeDetectionPreviewScreen extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.all(16),
               child: ImagePreview(
-                imagePath: BlocProvider.of<CameraCubit>(context)
+                imagePath: BlocProvider.of<FromCameraCubit>(context)
                     .currentImage
                     .imagePath,
-                edgeDetectionResult: BlocProvider.of<CameraCubit>(context)
+                edgeDetectionResult: BlocProvider.of<FromCameraCubit>(context)
                     .currentImage
                     .edgeDetectionResult,
               ),

@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:scany/business_logic/camera_cubit/camera_cubit.dart';
+import 'package:scany/business_logic/from_camera_cubit/form_camera_cubit.dart';
 import 'package:scany/constants/strings.dart';
 import 'package:scany/presentation/screens/camera_and_detection/edge_detector.dart';
 import 'package:simple_edge_detection/edge_detection.dart';
@@ -20,15 +20,15 @@ class CameraPreviewScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    BlocProvider.of<CameraCubit>(context).initializeController();
-    return BlocConsumer<CameraCubit, CameraState>(
+    BlocProvider.of<FromCameraCubit>(context).initializeController();
+    return BlocConsumer<FromCameraCubit, FromCameraState>(
       listener: (context, state) {},
       builder: (context, state) {
         return Scaffold(
           appBar: AppBar(
             leading: IconButton(
               onPressed: () {
-                BlocProvider.of<CameraCubit>(context).popBack(context);
+                BlocProvider.of<FromCameraCubit>(context).popBack(context);
               },
               icon: Icon(Icons.arrow_back_rounded),
             ),
@@ -84,10 +84,10 @@ class CameraPreviewScreen extends StatelessWidget {
                 offset: Offset(0, 60),
                 color: Colors.black,
                 elevation: 2,
-                icon: BlocProvider.of<CameraCubit>(context).flashModeIcon(),
+                icon: BlocProvider.of<FromCameraCubit>(context).flashModeIcon(),
                 // on selected we show the dialog box
                 onSelected: (value) {
-                  BlocProvider.of<CameraCubit>(context).changeFlashMode(value);
+                  BlocProvider.of<FromCameraCubit>(context).changeFlashMode(value);
                 },
               ),
               IconButton(
@@ -105,14 +105,14 @@ class CameraPreviewScreen extends StatelessWidget {
           body: StreamBuilder(
             stream: deviceOrientation$,
             builder: (context, snapshot) {
-                BlocProvider.of<CameraCubit>(context)
+                BlocProvider.of<FromCameraCubit>(context)
                   .detectCameraRotation(snapshot.data);
               return Container(
                 color: Colors.black,
                 child: Stack(
                   children: <Widget>[
-                    BlocProvider.of<CameraCubit>(context).controller == null ||
-                            BlocProvider.of<CameraCubit>(context)
+                    BlocProvider.of<FromCameraCubit>(context).controller == null ||
+                            BlocProvider.of<FromCameraCubit>(context)
                                     .controller!
                                     .value
                                     .isInitialized ==
@@ -122,12 +122,12 @@ class CameraPreviewScreen extends StatelessWidget {
                           )
                         : InkWell(
                             onTap: () async {
-                              await BlocProvider.of<CameraCubit>(context)
+                              await BlocProvider.of<FromCameraCubit>(context)
                                   .focus();
                             },
                             child: CameraView(
                                 controller:
-                                    BlocProvider.of<CameraCubit>(context)
+                                    BlocProvider.of<FromCameraCubit>(context)
                                         .controller!),
                           ),
                     Padding(
@@ -138,17 +138,17 @@ class CameraPreviewScreen extends StatelessWidget {
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceEvenly,
                                 children: [
-                                  BlocProvider.of<CameraCubit>(context)
+                                  BlocProvider.of<FromCameraCubit>(context)
                                           .images
                                           .isNotEmpty
                                       ? RotatedBox(
                                           quarterTurns:
-                                              BlocProvider.of<CameraCubit>(
+                                              BlocProvider.of<FromCameraCubit>(
                                                       context)
                                                   .cameraRotation,
                                           child: CircleAvatar(
                                             child: Text(
-                                                "${BlocProvider.of<CameraCubit>(context).images.length}"),
+                                                "${BlocProvider.of<FromCameraCubit>(context).images.length}"),
                                           ),
                                         )
                                       : Container(
@@ -156,18 +156,18 @@ class CameraPreviewScreen extends StatelessWidget {
                                         ),
                                   RotatedBox(
                                     quarterTurns:
-                                        BlocProvider.of<CameraCubit>(context)
+                                        BlocProvider.of<FromCameraCubit>(context)
                                             .cameraRotation,
                                     child: FloatingActionButton(
                                       foregroundColor: Colors.white,
                                       onPressed: () async {
-                                        await BlocProvider.of<CameraCubit>(
+                                        await BlocProvider.of<FromCameraCubit>(
                                                 context)
                                             .takePicture();
 
-                                        log('Picture saved to ${BlocProvider.of<CameraCubit>(context).currentImage.imagePath}');
+                                        log('Picture saved to ${BlocProvider.of<FromCameraCubit>(context).currentImage.imagePath}');
 
-                                        await BlocProvider.of<CameraCubit>(
+                                        await BlocProvider.of<FromCameraCubit>(
                                                 context)
                                             .currentImage.detectCurrentImageEdges();
 
@@ -178,12 +178,12 @@ class CameraPreviewScreen extends StatelessWidget {
                                       backgroundColor: Colors.black,
                                     ),
                                   ),
-                                  BlocProvider.of<CameraCubit>(context)
+                                  BlocProvider.of<FromCameraCubit>(context)
                                           .images
                                           .isNotEmpty
                                       ? RotatedBox(
                                           quarterTurns:
-                                              BlocProvider.of<CameraCubit>(
+                                              BlocProvider.of<FromCameraCubit>(
                                                       context)
                                                   .cameraRotation,
                                           child: IconButton(

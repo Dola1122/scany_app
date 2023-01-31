@@ -14,11 +14,10 @@ import 'package:scany/data/repository/images_helper.dart';
 import 'package:scany/presentation/screens/camera_and_detection/edge_detector.dart';
 import 'package:simple_edge_detection/edge_detection.dart';
 import 'package:image/image.dart' as img;
+part 'from_gallery_state.dart';
 
-part 'camera_state.dart';
-
-class CameraCubit extends Cubit<CameraState> {
-  CameraCubit() : super(CameraInitial());
+class FromGalleryCubit extends Cubit<FromGalleryState> {
+  FromGalleryCubit() : super(FromGalleryInitial());
 
   CameraController? controller;
   late List<CameraDescription> cameras;
@@ -163,10 +162,10 @@ class CameraCubit extends Cubit<CameraState> {
   // focus square appear
   Future<void> focusSquareAppearance() async {
     focusTaped = true;
-    emit(CameraStartFocusState());
+    emit(FromGalleryStartFocusState());
     await Future.delayed(const Duration(milliseconds: 1500));
     focusTaped = false;
-    emit(CameraEndFocusState());
+    emit(FromGalleryEndFocusState());
   }
 
   // flash mode pop up menu icon
@@ -196,7 +195,7 @@ class CameraCubit extends Cubit<CameraState> {
         break;
     }
     setFlashMode();
-    emit(CameraChangeFlashModeState());
+    emit(FromGalleryChangeFlashModeState());
   }
 
   // change camera flash mode
@@ -222,7 +221,7 @@ class CameraCubit extends Cubit<CameraState> {
     }
     if (deviceOrientation != currentCameraOrientation) {
       currentCameraOrientation = deviceOrientation;
-      emit(CameraRotatedState());
+      emit(FromGalleryRotatedState());
     }
     switch (deviceOrientation) {
       case DeviceOrientation.portraitUp:
@@ -254,7 +253,7 @@ class CameraCubit extends Cubit<CameraState> {
 
   // cubit
   @override
-  void onChange(Change<CameraState> change) {
+  void onChange(Change<FromGalleryState> change) {
     super.onChange(change);
     print(change);
   }

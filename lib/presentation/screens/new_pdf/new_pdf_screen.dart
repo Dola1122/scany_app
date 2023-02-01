@@ -9,6 +9,7 @@ import 'package:scany/data/repository/edge_detection_helper.dart';
 import 'package:scany/data/repository/pdf_helper.dart';
 import 'package:flutter_expandable_fab/flutter_expandable_fab.dart';
 import 'package:pdf/widgets.dart' as pw;
+import 'package:scany/presentation/screens/add_images_from_gallery/from_gallery_cropped_images_preview.dart';
 import '../../../constants/strings.dart';
 import '../../../data/repository/images_helper.dart';
 import '../../widgets/image_page.dart';
@@ -38,6 +39,16 @@ class _NewPdfScreenState extends State<NewPdfScreen> {
                   heroTag: "gallery",
                   child: const Icon(Icons.photo_library_outlined),
                   onPressed: () async {
+                    List<DetectedImageModel>? images =
+                        await Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => EditCapturedImagesScreen()));
+                    if (images != null) {
+                      BlocProvider.of<NewPdfCubit>(context)
+                          .detectedImages
+                          .addAll(images);
+                    }
+                    BlocProvider.of<NewPdfCubit>(context).toggleFAB();
+
                     // Uint8List? imageJpg =
                     //     await ImagesHelper.getImageFromGallery();
                     //

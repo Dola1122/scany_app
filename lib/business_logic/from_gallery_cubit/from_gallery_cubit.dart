@@ -14,40 +14,33 @@ import 'package:scany/data/repository/images_helper.dart';
 import 'package:scany/presentation/screens/camera_and_detection/edge_detector.dart';
 import 'package:simple_edge_detection/edge_detection.dart';
 import 'package:image/image.dart' as img;
+
 part 'from_gallery_state.dart';
 
 class FromGalleryCubit extends Cubit<FromGalleryState> {
   FromGalleryCubit() : super(FromGalleryInitial());
 
-  CameraController? controller;
-  late List<CameraDescription> cameras;
   DetectedImageModel currentImage = DetectedImageModel();
   List<DetectedImageModel> images = [];
-  late String flashMode;
-  bool focusTaped = false;
   int currentImageIndex = 0;
 
   // how much 90 degrees rotation
   int cameraRotation = 0;
-  DeviceOrientation currentCameraOrientation = DeviceOrientation.portraitUp;
 
-  // initialize camera controller when go to camera preview
-  Future<void> initializeController() async {
-    flashMode = "auto";
-    cameras = await availableCameras();
-
-    if (cameras.isEmpty) {
-      log('No cameras detected');
-      return;
+  // pick images from gallery
+  pickImagesFromGallery(context) async {
+    List<XFile> imageFileList = await ImagesHelper.pickMultipleImages();
+    if (imageFileList.isEmpty) {
+      popBack(context);
     }
-
-    controller = CameraController(
-      cameras[0],
-      ResolutionPreset.max,
-      enableAudio: false,
-    );
-    await controller?.initialize();
-    emit(ControllerInitializedState());
+    images = await Future.wait(imageFileList.map((element) async {
+      DetectedImageModel model = DetectedImageModel();
+      model.imagePath = element.path;
+      await model.detectCurrentImageEdges();
+      await model.cropDetectedImage();
+      return model;
+    }).toList());
+    emit(FromGalleryImagesPickedState());
   }
 
   // add current image and push to camera to take another image
@@ -63,50 +56,13 @@ class FromGalleryCubit extends Cubit<FromGalleryState> {
     Navigator.pop(context);
     currentImage = DetectedImageModel();
     images = [];
-    controller?.dispose();
-    controller = null;
   }
 
   // new pop after take all images and apply all filters
-  void newPopBack(context) async {
-    Navigator.pop(context);
+  void addSelectedImages(context) async {
     Navigator.pop(context, images);
     currentImage = DetectedImageModel();
     images = [];
-    controller?.dispose();
-    controller = null;
-  }
-
-  // take image by camera controller
-  Future<void> takePicture() async {
-    currentImage = DetectedImageModel();
-    if (!controller!.value.isInitialized) {
-      log('Error: select a camera first.');
-      return;
-    }
-
-    final Directory extDir = await getTemporaryDirectory();
-    final String dirPath = '${extDir.path}/Pictures/flutter_test';
-    await Directory(dirPath).create(recursive: true);
-    String? filePath;
-
-    if (controller!.value.isTakingPicture) {
-      return;
-    }
-
-    try {
-      XFile image = await controller!.takePicture();
-      filePath = image.path;
-      if (currentCameraOrientation == DeviceOrientation.portraitUp) {
-        filePath = await resizePortraitPhoto(filePath);
-      } else {
-        filePath = await resizeLandscapePhoto(filePath);
-      }
-    } on CameraException catch (e) {
-      log(e.toString());
-      return;
-    }
-    currentImage.imagePath = filePath;
   }
 
   // rotate image model
@@ -150,100 +106,6 @@ class FromGalleryCubit extends Cubit<FromGalleryState> {
     await File(filePath).delete();
 
     return croppedFile.path;
-  }
-
-  // camera refocus to the middle of the camera (0.5 , 0.5)
-  Future<void> focus() async {
-    await controller!.setFocusPoint(null);
-    await controller!.setFocusPoint(const Offset(0.5, 0.5));
-    await focusSquareAppearance();
-  }
-
-  // focus square appear
-  Future<void> focusSquareAppearance() async {
-    focusTaped = true;
-    emit(FromGalleryStartFocusState());
-    await Future.delayed(const Duration(milliseconds: 1500));
-    focusTaped = false;
-    emit(FromGalleryEndFocusState());
-  }
-
-  // flash mode pop up menu icon
-  Icon flashModeIcon() {
-    switch (flashMode) {
-      case "auto":
-        return const Icon(Icons.flash_auto);
-      case "on":
-        return const Icon(Icons.flash_on);
-      case "off":
-        return const Icon(Icons.flash_off);
-    }
-    return const Icon(Icons.flash_off);
-  }
-
-  // flash mode pop up menu logic
-  void changeFlashMode(int value) {
-    switch (value) {
-      case 1:
-        flashMode = "auto";
-        break;
-      case 2:
-        flashMode = "on";
-        break;
-      case 3:
-        flashMode = "off";
-        break;
-    }
-    setFlashMode();
-    emit(FromGalleryChangeFlashModeState());
-  }
-
-  // change camera flash mode
-  Future<void> setFlashMode() async {
-    switch (flashMode) {
-      case "auto":
-        await controller!.setFlashMode(FlashMode.auto);
-        break;
-      case "on":
-        await controller!.setFlashMode(FlashMode.always);
-        break;
-      case "off":
-        await controller!.setFlashMode(FlashMode.off);
-        break;
-    }
-  }
-
-  // detect camera rotation
-  Future<void> detectCameraRotation(
-      DeviceOrientation? deviceOrientation) async {
-    if (deviceOrientation == null) {
-      return;
-    }
-    if (deviceOrientation != currentCameraOrientation) {
-      currentCameraOrientation = deviceOrientation;
-      emit(FromGalleryRotatedState());
-    }
-    switch (deviceOrientation) {
-      case DeviceOrientation.portraitUp:
-        await controller?.lockCaptureOrientation(DeviceOrientation.portraitUp);
-        cameraRotation = 0;
-        break;
-      case DeviceOrientation.landscapeRight:
-        await controller
-            ?.lockCaptureOrientation(DeviceOrientation.landscapeLeft);
-
-        cameraRotation = 1;
-        break;
-      case DeviceOrientation.landscapeLeft:
-        await controller
-            ?.lockCaptureOrientation(DeviceOrientation.landscapeRight);
-
-        cameraRotation = -1;
-        break;
-      case DeviceOrientation.portraitDown:
-        cameraRotation = 0;
-        break;
-    }
   }
 
   void toggleDetection() {

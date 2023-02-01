@@ -258,4 +258,9 @@ class FromCameraCubit extends Cubit<FromCameraState> {
     super.onChange(change);
     print(change);
   }
+  // @override
+  // Future<void> close() {
+  //   // TODO: implement close
+  //   return super.close();
+  // }
 }

@@ -7,7 +7,6 @@ import 'package:path_provider/path_provider.dart';
 import 'package:image/image.dart' as img;
 
 class ImagesHelper {
-
   static Future<Uint8List?> getImageFromCamera() async {
     Uint8List? file = await _pickImage(ImageSource.camera);
     return file;
@@ -32,6 +31,22 @@ class ImagesHelper {
     print("No Image Selected");
     return null;
   }
+
+  // pick multiple images from gallery
+  static Future<List<XFile>> pickMultipleImages() async {
+    final ImagePicker imagePicker = ImagePicker();
+    List<XFile> imageFileList = [],
+        selectedImages = await imagePicker.pickMultiImage(
+          imageQuality: 25,
+          maxWidth: 1920,
+          maxHeight: 1920,
+        );
+    if (selectedImages.isNotEmpty) {
+      imageFileList.addAll(selectedImages);
+    }
+    return imageFileList;
+  }
+
   // rotate image with path and angle
   static Future<void> rotateImage(String? imagePath, int angle) async {
     log("the angle = $angle");
@@ -41,7 +56,7 @@ class ImagesHelper {
     Future<Directory> path = getTemporaryDirectory();
 
     final img.Image? capturedImage =
-    img.decodeImage(await croppedImage.readAsBytes());
+        img.decodeImage(await croppedImage.readAsBytes());
 
     img.Image newImage = img.copyRotate(
       capturedImage!,

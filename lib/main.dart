@@ -5,6 +5,8 @@ import 'package:scany/business_logic/new_pdf_cubit/new_pdf_cubit.dart';
 import 'app_router.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import 'business_logic/from_gallery_cubit/from_gallery_cubit.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   runApp(MyApp(
@@ -26,7 +28,7 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider(
           create: (context) => NewPdfCubit(),
-        )
+        ),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

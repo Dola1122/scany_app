@@ -30,6 +30,7 @@ class NewPdfCubit extends Cubit<NewPdfState> {
   }
 
   void addAndSavePdf() async {
+
     // add every image in the list as a page to the pdf
     for (int i = 0; i < images.length; i++) {
       await PdfHelper.addImageToPdf(pdf: pdf, imageJpg: images[i]);

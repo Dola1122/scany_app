@@ -8,9 +8,9 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:scany/data/models/detected_image_model.dart';
-import 'package:scany/data/repository/edge_detection_helper.dart';
-import 'package:scany/data/repository/images_helper.dart';
+import 'package:scany/data/models/image_model.dart';
+import 'package:scany/core/utils/edge_detection_helper.dart';
+import 'package:scany/core/utils/images_helper.dart';
 import 'package:scany/presentation/screens/camera_and_detection/edge_detector.dart';
 import 'package:simple_edge_detection/edge_detection.dart';
 import 'package:image/image.dart' as img;
@@ -22,8 +22,8 @@ class FromCameraCubit extends Cubit<FromCameraState> {
 
   CameraController? controller;
   late List<CameraDescription> cameras;
-  DetectedImageModel currentImage = DetectedImageModel();
-  List<DetectedImageModel> images = [];
+  ImageModel currentImage = ImageModel();
+  List<ImageModel> images = [];
   late String flashMode;
   bool focusTaped = false;
   int currentImageIndex = 0;
@@ -55,14 +55,14 @@ class FromCameraCubit extends Cubit<FromCameraState> {
   Future<void> addCurrentImage() async {
     await currentImage.cropDetectedImage();
     images.add(currentImage);
-    currentImage = DetectedImageModel();
+    currentImage = ImageModel();
     emit(AddCurrentImageSuccessState());
   }
 
   // regular pop to new pdf screen
   void popBack(context) async {
     Navigator.pop(context);
-    currentImage = DetectedImageModel();
+    currentImage = ImageModel();
     images = [];
     controller?.dispose();
     controller = null;
@@ -72,7 +72,7 @@ class FromCameraCubit extends Cubit<FromCameraState> {
   void newPopBack(context) async {
     Navigator.pop(context);
     Navigator.pop(context, images);
-    currentImage = DetectedImageModel();
+    currentImage = ImageModel();
     images = [];
     controller?.dispose();
     controller = null;
@@ -80,7 +80,7 @@ class FromCameraCubit extends Cubit<FromCameraState> {
 
   // take image by camera controller
   Future<void> takePicture() async {
-    currentImage = DetectedImageModel();
+    currentImage = ImageModel();
     if (!controller!.value.isInitialized) {
       log('Error: select a camera first.');
       return;
@@ -111,13 +111,13 @@ class FromCameraCubit extends Cubit<FromCameraState> {
   }
 
   // rotate image model
-  Future<void> rotateImageModel(DetectedImageModel image, angle) async {
-    if (image.imagePath != null) {
-      await ImagesHelper.rotateImage(image.imagePath ?? "", angle);
-    }
-    if (image.croppedImagePath != null) {
-      await ImagesHelper.rotateImage(image.croppedImagePath ?? "", angle);
-    }
+  Future<void> rotateImageModel(angle) async {
+    await currentImage.rotateImageModel(angle);
+    emit(ImageModelRotatedState());
+  }
+
+  Future<void> rotateImageModelWithIndex(angle) async {
+    await images[currentImageIndex].rotateImageModel(angle);
     emit(ImageModelRotatedState());
   }
 
@@ -258,9 +258,9 @@ class FromCameraCubit extends Cubit<FromCameraState> {
     super.onChange(change);
     print(change);
   }
-  // @override
-  // Future<void> close() {
-  //   // TODO: implement close
-  //   return super.close();
-  // }
+// @override
+// Future<void> close() {
+//   // TODO: implement close
+//   return super.close();
+// }
 }

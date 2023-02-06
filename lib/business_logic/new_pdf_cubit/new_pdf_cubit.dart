@@ -4,17 +4,16 @@ import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_expandable_fab/flutter_expandable_fab.dart';
 import 'package:meta/meta.dart';
-import 'package:scany/data/models/detected_image_model.dart';
-import 'package:scany/data/repository/images_helper.dart';
-import 'package:scany/data/repository/pdf_helper.dart';
-
+import 'package:scany/data/models/image_model.dart';
+import 'package:scany/core/utils/images_helper.dart';
+import 'package:scany/core/utils/pdf_helper.dart';
 part 'new_pdf_state.dart';
 
 class NewPdfCubit extends Cubit<NewPdfState> {
   NewPdfCubit() : super(NewPdfInitial());
 
   List<Uint8List> images = [];
-  List<DetectedImageModel> detectedImages = [];
+  List<ImageModel> detectedImages = [];
   final key = GlobalKey<ExpandableFabState>();
   pw.Document pdf = pw.Document();
   TextEditingController fileNameController = TextEditingController();
@@ -53,7 +52,7 @@ class NewPdfCubit extends Cubit<NewPdfState> {
   }
 
   // rotate image model
-  Future<void> rotateImageModel(DetectedImageModel image, angle) async {
+  Future<void> rotateImageModel(ImageModel image, angle) async {
     if (image.imagePath != null) {
       await ImagesHelper.rotateImage(image.imagePath ?? "", angle);
     }

@@ -7,6 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:scany/business_logic/from_camera_cubit/form_camera_cubit.dart';
 import 'package:scany/business_logic/new_pdf_cubit/new_pdf_cubit.dart';
 import 'package:scany/constants/strings.dart';
+import 'package:scany/presentation/screens/add_images_from_gallery/from_gallery_edge_detection_preview_screen.dart';
 
 class EditDetectedImageScreen extends StatelessWidget {
   final int index;
@@ -54,7 +55,9 @@ class EditDetectedImageScreen extends StatelessWidget {
                         size: 30,
                         color: Colors.white,
                       ),
-                      onPressed: () {},
+                      onPressed: () {
+
+                      },
                     ),
                     IconButton(
                       icon: Icon(

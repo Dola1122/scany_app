@@ -29,6 +29,9 @@ class MyApp extends StatelessWidget {
         BlocProvider(
           create: (context) => NewPdfCubit(),
         ),
+        BlocProvider(
+          create: (context) => FromGalleryCubit(),
+        ),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

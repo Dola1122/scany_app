@@ -32,14 +32,11 @@ class EdgeDetectionPreviewScreen extends StatelessWidget {
                     ),
                     onPressed: () async {
                       await BlocProvider.of<FromCameraCubit>(context)
-                          .rotateImageModel(
-                              BlocProvider.of<FromCameraCubit>(context)
-                                  .currentImage,
-                              -90);
-                      BlocProvider.of<FromCameraCubit>(context)
-                          .currentImage
-                          .edgeDetectionResult
-                          ?.rotateDetectionResult(-90);
+                          .rotateImageModel(-90);
+                      // BlocProvider.of<FromCameraCubit>(context)
+                      //     .currentImage
+                      //     .edgeDetectionResult
+                      //     ?.rotateDetectionResult(-90);
                     },
                   ),
                   IconButton(
@@ -50,14 +47,7 @@ class EdgeDetectionPreviewScreen extends StatelessWidget {
                     ),
                     onPressed: () async {
                       await BlocProvider.of<FromCameraCubit>(context)
-                          .rotateImageModel(
-                              BlocProvider.of<FromCameraCubit>(context)
-                                  .currentImage,
-                              90);
-                      BlocProvider.of<FromCameraCubit>(context)
-                          .currentImage
-                          .edgeDetectionResult
-                          ?.rotateDetectionResult(90);
+                          .rotateImageModel(90);
                     },
                   ),
                   BlocProvider.of<FromCameraCubit>(context)

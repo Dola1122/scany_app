@@ -4,14 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:reorderable_grid_view/reorderable_grid_view.dart';
 import 'package:scany/business_logic/new_pdf_cubit/new_pdf_cubit.dart';
-import 'package:scany/data/models/detected_image_model.dart';
-import 'package:scany/data/repository/edge_detection_helper.dart';
-import 'package:scany/data/repository/pdf_helper.dart';
+import 'package:scany/data/models/image_model.dart';
+import 'package:scany/core/utils/edge_detection_helper.dart';
 import 'package:flutter_expandable_fab/flutter_expandable_fab.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:scany/presentation/screens/add_images_from_gallery/from_gallery_cropped_images_preview.dart';
 import '../../../constants/strings.dart';
-import '../../../data/repository/images_helper.dart';
 import '../../widgets/image_page.dart';
 import '../camera_and_detection/camera_preview_screen.dart';
 
@@ -39,7 +37,7 @@ class _NewPdfScreenState extends State<NewPdfScreen> {
                   heroTag: "gallery",
                   child: const Icon(Icons.photo_library_outlined),
                   onPressed: () async {
-                    List<DetectedImageModel>? images =
+                    List<ImageModel>? images =
                         await Navigator.of(context).push(MaterialPageRoute(
                             builder: (context) => EditCapturedImagesScreen()));
                     if (images != null) {
@@ -68,7 +66,7 @@ class _NewPdfScreenState extends State<NewPdfScreen> {
                     ////Uint8List? imageJpg = await EdgeDetectionHelper().getImage();
                     // ImagesHelper.getImageFromCamera();
 
-                    List<DetectedImageModel>? newImages =
+                    List<ImageModel>? newImages =
                         await Navigator.of(context).push(
                       MaterialPageRoute(
                         builder: (context) => CameraPreviewScreen(),

@@ -7,7 +7,6 @@ import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 import 'dart:typed_data';
 import 'package:flutter/services.dart';
-import 'package:scany/data/repository/images_helper.dart';
 
 class PdfHelper {
 

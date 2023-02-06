@@ -7,6 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:scany/business_logic/from_camera_cubit/form_camera_cubit.dart';
 import 'package:scany/constants/strings.dart';
+import 'package:scany/data/models/image_model.dart';
+import 'package:scany/presentation/widgets/cropped_images_preview_widgets/custom_images_list_view.dart';
 
 import 'image_view.dart';
 
@@ -24,7 +26,8 @@ class EditCapturedImagesScreen extends StatelessWidget {
               actions: [
                 IconButton(
                   onPressed: () async {
-                    BlocProvider.of<FromCameraCubit>(context).newPopBack(context);
+                    BlocProvider.of<FromCameraCubit>(context)
+                        .newPopBack(context);
                   },
                   icon: Icon(Icons.check),
                 ),
@@ -46,16 +49,7 @@ class EditCapturedImagesScreen extends StatelessWidget {
                       ),
                       onPressed: () async {
                         await BlocProvider.of<FromCameraCubit>(context)
-                            .rotateImageModel(
-                                BlocProvider.of<FromCameraCubit>(context).images[
-                                    BlocProvider.of<FromCameraCubit>(context)
-                                        .currentImageIndex],
-                                -90);
-                        BlocProvider.of<FromCameraCubit>(context)
-                            .images[BlocProvider.of<FromCameraCubit>(context)
-                                .currentImageIndex]
-                            .edgeDetectionResult
-                            ?.rotateDetectionResult(-90);
+                            .rotateImageModelWithIndex(-90);
                       },
                     ),
                     IconButton(
@@ -78,38 +72,14 @@ class EditCapturedImagesScreen extends StatelessWidget {
                 ),
               ),
             ),
-            body: Container(
-              color: Colors.black87,
-              child: CarouselSlider.builder(
-                options: CarouselOptions(
-                  autoPlay: false,
-                  enlargeCenterPage: true,
-                  enableInfiniteScroll: false,
-                  height: double.infinity,
-                  onPageChanged: (index, reason) {
-                    BlocProvider.of<FromCameraCubit>(context).currentImageIndex =
-                        index;
-                  },
-                  // viewportFraction: 0.9,
-                  // aspectRatio: 2.0,
-                  // initialPage: 2,
-                ),
-                itemCount: BlocProvider.of<FromCameraCubit>(context).images.length,
-                itemBuilder:
-                    (BuildContext context, int itemIndex, int pageViewIndex) {
-                  return Center(
-                    child: Image.file(
-                      File(
-                        BlocProvider.of<FromCameraCubit>(context)
-                            .images[itemIndex]
-                            .croppedImagePath!,
-                      ),
-                      fit: BoxFit.contain,
-                      key: GlobalKey(),
-                    ),
-                  );
-                },
-              ),
+            body: CustomImagesListView(
+              imageModels: BlocProvider.of<FromCameraCubit>(context).images,
+              numberOfItems:
+                  BlocProvider.of<FromCameraCubit>(context).images.length,
+              onPageChanged: (index, reason) {
+                BlocProvider.of<FromCameraCubit>(context).currentImageIndex =
+                    index;
+              },
             )
             // Container(
             //   color: Colors.black,

@@ -1,21 +1,21 @@
 import 'dart:developer';
 import 'dart:ui';
 
-import 'package:scany/data/repository/edge_detection_helper.dart';
+import 'package:scany/core/utils/edge_detection_helper.dart';
+import 'package:scany/core/utils/images_helper.dart';
 import 'package:simple_edge_detection/edge_detection.dart';
 
-class DetectedImageModel {
+class ImageModel {
   String? imagePath;
   String? croppedImagePath;
   EdgeDetectionResult? edgeDetectionResult;
-  double? x;
   Offset? topLeft;
   Offset? topRight;
   Offset? bottomLeft;
   Offset? bottomRight;
   bool autoDetection = true;
 
-  DetectedImageModel({
+  ImageModel({
     this.imagePath,
     this.croppedImagePath,
     this.edgeDetectionResult,
@@ -61,6 +61,17 @@ class DetectedImageModel {
     } else {
       edgeDetectionResult = manual;
       autoDetection = false;
+    }
+  }
+
+  Future<void> rotateImageModel(int angle) async {
+    // rotate image model
+    if (imagePath != null) {
+      await ImagesHelper.rotateImage(imagePath ?? "", angle);
+      edgeDetectionResult?.rotateDetectionResult(angle);
+    }
+    if (croppedImagePath != null) {
+      await ImagesHelper.rotateImage(croppedImagePath ?? "", angle);
     }
   }
 }
